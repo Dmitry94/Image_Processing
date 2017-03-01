@@ -1,9 +1,13 @@
-#include <iostream>
-
-using namespace std;
+#include "intro_window.h"
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {
-    cout << "Hello World!" << endl;
-    return 0;
+    QApplication a(argc, argv);
+
+    IntroWindow w;
+    w.setWindowTitle("Intro application");
+    w.show();
+
+    return a.exec();
 }
