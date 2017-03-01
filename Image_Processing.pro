@@ -1,4 +1,5 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    gui_library
+    gui_library \
+    lab_1_intro
