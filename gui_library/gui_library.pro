@@ -5,14 +5,17 @@
 #-------------------------------------------------
 
 QT       -= core
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = gui_library
 TEMPLATE = lib
 CONFIG += staticlib
 
-SOURCES += gui_library.cpp
+SOURCES += gui_library.cpp \
+    intro_window.cpp
 
-HEADERS += gui_library.h
+HEADERS += gui_library.h \
+    intro_window.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

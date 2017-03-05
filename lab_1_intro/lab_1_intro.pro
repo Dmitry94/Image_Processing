@@ -11,10 +11,13 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = lab_1_intro
 TEMPLATE = app
 
+CONFIG += gui_library
 
-SOURCES += main.cpp\
-        intro_window.cpp
+SOURCES += main.cpp
 
-HEADERS  += intro_window.h
-
-FORMS    += intro_window.ui
+gui_library {
+    unix: LIBS += -L$$OUT_PWD/../gui_library/ -lgui_library
+    INCLUDEPATH += $$PWD/../gui_library
+    DEPENDPATH += $$PWD/../gui_library
+    unix: PRE_TARGETDEPS += $$OUT_PWD/../gui_library/libgui_library.a
+}
