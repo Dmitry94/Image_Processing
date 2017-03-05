@@ -14,14 +14,14 @@ inline QImage cvmat_to_qimage(const cv::Mat& image) {
             QImage qimage(image.data, image.cols, image.rows,
                          static_cast<int>(image.step),
                          QImage::Format_ARGB32);
-            return qimage;
+            return qimage.copy();
          }
 
          case CV_8UC3: {
             QImage qimage(image.data, image.cols, image.rows,
                          static_cast<int>(image.step),
                          QImage::Format_RGB888);
-            return qimage.rgbSwapped();
+            return qimage.rgbSwapped().copy();
          }
 
          case CV_8UC1: {
@@ -47,7 +47,7 @@ inline QImage cvmat_to_qimage(const cv::Mat& image) {
             image.setColorTable(sColorTable);
 #endif
 
-            return qimage;
+            return qimage.copy();
          }
 
          default:
