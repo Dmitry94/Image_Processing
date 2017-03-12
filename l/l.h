@@ -2,11 +2,6 @@
 #define L_H
 
 
-class L
-{
-
-public:
-    L();
-};
+int a();
 
 #endif // L_H

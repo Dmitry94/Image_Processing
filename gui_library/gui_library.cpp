@@ -8,7 +8,7 @@
 
 namespace gui {
 
-inline QImage cvmat_to_qimage(const cv::Mat& image) {
+QImage cvmat_to_qimage(const cv::Mat& image) {
     switch (image.type()) {
          case CV_8UC4: {
             QImage qimage(image.data, image.cols, image.rows,
@@ -60,12 +60,12 @@ inline QImage cvmat_to_qimage(const cv::Mat& image) {
 }
 
 
-inline QPixmap cvmat_to_qpixmap(const cv::Mat& image) {
+QPixmap cvmat_to_qpixmap(const cv::Mat& image) {
     return QPixmap::fromImage(cvmat_to_qimage(image));
 }
 
 
-inline cv::Mat cvmat_from_qimage(const QImage& qimage) {
+cv::Mat cvmat_from_qimage(const QImage& qimage) {
     switch (qimage.format()) {
 
        // 8-bit, 4 channel
@@ -81,7 +81,7 @@ inline cv::Mat cvmat_from_qimage(const QImage& qimage) {
        // 8-bit, 3 channel
        case QImage::Format_RGB32:
        case QImage::Format_RGB888: {
-          QImage swapped;
+          QImage swapped = qimage;
           if ( qimage.format() == QImage::Format_RGB32 ) {
              swapped = swapped.convertToFormat(QImage::Format_RGB888);
           }
@@ -111,7 +111,7 @@ inline cv::Mat cvmat_from_qimage(const QImage& qimage) {
 }
 
 
-inline cv::Mat cvmat_from_qpixmap(const QPixmap& qpixmap) {
+cv::Mat cvmat_from_qpixmap(const QPixmap& qpixmap) {
     return cvmat_from_qimage(qpixmap.toImage());
 }
 

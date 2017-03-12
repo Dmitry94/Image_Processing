@@ -16,7 +16,7 @@ namespace gui {
  *
  * @return QImage object.
  */
-inline QImage cvmat_to_qimage(const cv::Mat& image);
+QImage cvmat_to_qimage(const cv::Mat& image);
 
 
 /**
@@ -27,7 +27,7 @@ inline QImage cvmat_to_qimage(const cv::Mat& image);
  *
  * @return QPixmap object.
  */
-inline QPixmap cvmat_to_qpixmap(const cv::Mat& image);
+QPixmap cvmat_to_qpixmap(const cv::Mat& image);
 
 /**
  * Creates cv::Mat object from QImage.
@@ -36,7 +36,7 @@ inline QPixmap cvmat_to_qpixmap(const cv::Mat& image);
  *
  * @return cv::Mat clone.
  */
-inline cv::Mat cvmat_from_qimage(const QImage& qimage);
+cv::Mat cvmat_from_qimage(const QImage& qimage);
 
 /**
  * Creates cv::Mat object from QPixmap.
@@ -45,7 +45,7 @@ inline cv::Mat cvmat_from_qimage(const QImage& qimage);
  *
  * @return cv::Mat clone.
  */
-inline cv::Mat cvmat_from_qpixmap(const QPixmap& qpixmap);
+cv::Mat cvmat_from_qpixmap(const QPixmap& qpixmap);
 
 } // namespace gui
 

@@ -1,18 +1,14 @@
 #include <QApplication>
 
-#include <base_window.h>
-
-#include <icpl.h>
+#include <main_window.h>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    gui::BaseWindow w;
-    w.setWindowTitle("Base application");
+    MainWindow w;
+    w.setWindowTitle("Lab 1 application");
     w.show();
-
-    auto hist = icpl::build_histogram(cv::Mat());
 
     return a.exec();
 }

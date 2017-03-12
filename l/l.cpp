@@ -1,6 +1,6 @@
 #include "l.h"
 
 
-L::L()
-{
+int a(){
+    return 4;
 }

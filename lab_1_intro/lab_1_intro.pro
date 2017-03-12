@@ -11,11 +11,17 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = lab_1_Base
 TEMPLATE = app
 
-CONFIG += gui_library
+CONFIG += c++14
 CONFIG += icpl
+CONFIG += gui_library
+CONFIG += console
 CONFIG += opencv
 
-SOURCES += main.cpp
+HEADERS += \
+    main_window.h
+
+SOURCES += main.cpp \
+    main_window.cpp
 
 gui_library {
     unix: LIBS += -L$$OUT_PWD/../gui_library/ -lgui_library
@@ -29,10 +35,10 @@ icpl {
     INCLUDEPATH += $$PWD/../icpl
     DEPENDPATH += $$PWD/../icpl
     unix: PRE_TARGETDEPS += $$OUT_PWD/../icpl/libicpl.a
+    LIBS += $$OUT_PWD/../icpl/libicpl.a
+    LIBS += -fopenmp
 }
 
 opencv {
     LIBS += -lopencv_core -lopencv_imgproc
 }
-
-

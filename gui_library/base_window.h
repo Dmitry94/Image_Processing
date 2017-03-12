@@ -25,7 +25,7 @@ protected:
      *
      * @param new_image[in] New image.
      */
-    void set_image(const QImage &new_image);
+    virtual void set_main_image(const QImage &new_image);
 
     /**
      * Creates menu actions.
@@ -36,6 +36,24 @@ protected:
      * Updates menu actions.
      */
     virtual void update_actions();
+
+    /**
+     * Callback for resize window.
+     *
+     * @param event[in] Event params.
+     */
+    void resizeEvent(QResizeEvent *event) override;
+
+    /** Main image and its container in Window */
+    QImage main_image;
+    QLabel *main_image_label;
+
+    /** Koefs on which image sizes will be mult */
+    float width_koef = 1.0;
+    float height_koef = 1.0;
+
+    /** Gap from top, bot, left and right */
+    const int GAP = 10;
 
 private slots:
     void open();
@@ -69,8 +87,6 @@ private:
     void init_image_file_dialog(QFileDialog &dialog,
                                 QFileDialog::AcceptMode accept_mode);
 
-    QImage image;
-    QLabel *image_label;
 
     QAction *open_act;
     QAction *save_act;
