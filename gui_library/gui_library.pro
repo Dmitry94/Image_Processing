@@ -12,10 +12,10 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 SOURCES += gui_library.cpp \
-    intro_window.cpp
+    base_window.cpp
 
 HEADERS += gui_library.h \
-    intro_window.h
+    base_window.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
