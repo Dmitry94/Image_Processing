@@ -108,16 +108,23 @@ void BaseWindow::save_as() {
 void BaseWindow::create_actions() {
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
 
-    open_act = fileMenu->addAction(tr("&Open..."), this, &BaseWindow::open);
+    open_act = new QAction(tr("&Open..."), this);
     open_act->setShortcut(QKeySequence::Open);
+    connect(open_act, SIGNAL(triggered()), this, SLOT(open()));
 
-    save_act = fileMenu->addAction(tr("&Save As..."), this, &BaseWindow::save_as);
+
+    save_act = new QAction(tr("&Save As..."), this);
     save_act->setEnabled(false);
+    connect(save_act, SIGNAL(triggered()), this, SLOT(save_as()));
 
     fileMenu->addSeparator();
 
-    QAction *exitAct = fileMenu->addAction(tr("E&xit"), this, &QWidget::close);
+    QAction *exitAct = new QAction(tr("E&xit"), this);
     exitAct->setShortcut(tr("Ctrl+Q"));
+    connect(save_act, SIGNAL(triggered()), this, SLOT(close()));
+
+    QList<QAction*> actions { open_act, save_act, exitAct };
+    fileMenu->addActions(actions);
 }
 
 void BaseWindow::update_actions() {

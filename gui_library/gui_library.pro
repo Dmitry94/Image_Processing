@@ -9,7 +9,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = gui_library
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += staticlib c++14
 
 SOURCES += gui_library.cpp \
     base_window.cpp
