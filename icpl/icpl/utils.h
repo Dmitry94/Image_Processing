@@ -25,7 +25,8 @@ std::vector<std::vector<float>> build_histograms(const cv::Mat &src);
  *
  * @return histogram_image  Image, which represents histogram.
  */
-cv::Mat draw_histogram(const std::vector<float> &histogram);
+cv::Mat draw_histogram(const std::vector<std::vector<float>> &histograms,
+                       const std::vector<cv::Scalar> &colors);
 
 } // namespace icpl
 

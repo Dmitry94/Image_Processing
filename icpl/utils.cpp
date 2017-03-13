@@ -50,27 +50,31 @@ std::vector<std::vector<float>> build_histograms(const cv::Mat &src) {
     return histogram;
 }
 
-cv::Mat draw_histogram(const std::vector<float> &histogram) {
-    const int hist_size = histogram.size();
-    if (hist_size != 256) {
-        throw std::length_error("draw_histogram: histogram should have"
-                                     " size equal to 256!");
+cv::Mat draw_histogram(const std::vector<std::vector<float>> &histograms,
+                       const std::vector<cv::Scalar> &colors) {
+    const size_t channels = histograms.size();
+    if (channels != colors.size()) {
+        throw std::length_error("draw_histogram: Histograms count should be "
+                                "equal to colors count!");
     }
 
-    const int hist_w = 256 * 7;
-    const int hist_h = 256 * 1;
-    cv::Mat histogram_image(hist_h, hist_w, CV_8UC1, cv::Scalar(0));
+    for (size_t i = 0; i < channels; i++) {
+        if (histograms[i].size() != 256) {
+            throw std::length_error("draw_histogram: histogram should have"
+                                         " size equal to 256!");
+        }
+    }
 
-    for(int i = 0; i < hist_size; i++) {
-        int cur_height = hist_h - cvRound(hist_h * histogram[i]);
+    int hist_w = 512; int hist_h = 300;
+    int bin_w = cvRound((double)hist_w / 256);
+    cv::Mat histogram_image(hist_h, hist_w, CV_8UC3, cv::Scalar(0));
 
-        for (int y = cur_height; y < hist_h; y++) {
-            uchar *cur_line = histogram_image.ptr(y) + i * hist_w / hist_size;
-
-            for (int k = 0; k < hist_w / hist_size; k++) {
-                    cur_line[0] = 255;
-                    cur_line++;
-            }
+    for (int j = 0; j < 256; j++) {
+        for (size_t i = 0; i < channels; i++) {
+            cv::line(histogram_image,
+                     cv::Point(bin_w*(j-1), hist_h - cvRound(hist_h * histograms[i][j-1])),
+                     cv::Point(bin_w*(j), hist_h - cvRound(hist_h * histograms[i][j])),
+                     colors[i], 2, 8, 0);
         }
     }
 
