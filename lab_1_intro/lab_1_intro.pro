@@ -35,10 +35,9 @@ icpl {
     INCLUDEPATH += $$PWD/../icpl
     DEPENDPATH += $$PWD/../icpl
     unix: PRE_TARGETDEPS += $$OUT_PWD/../icpl/libicpl.a
-    LIBS += $$OUT_PWD/../icpl/libicpl.a
     LIBS += -fopenmp
 }
 
 opencv {
-    LIBS += -lopencv_core -lopencv_imgproc
+    LIBS += -lopencv_core -lopencv_highgui -lopencv_imgproc
 }

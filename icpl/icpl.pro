@@ -20,7 +20,7 @@ SOURCES += \
     utils.cpp
 
 HEADERS += icpl.h \
-    utils.h
+    icpl/utils.h
 
 optimization {
     QMAKE_CFLAGS_RELEASE       += -O2

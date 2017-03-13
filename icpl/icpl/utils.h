@@ -22,12 +22,10 @@ std::vector<std::vector<float>> build_histograms(const cv::Mat &src);
  * Creates visual interpretation of histogram.
  *
  * @param histogram[in]     Histogram.
- * @param color[in]         Color in each line draws
  *
- * @param histogram_image[out]  Image, in which draw
+ * @return histogram_image  Image, which represents histogram.
  */
-void draw_histogram(const std::vector<float> &histogram,
-                    const cv::Scalar &color, cv::Mat &histogram_image);
+cv::Mat draw_histogram(const std::vector<float> &histogram);
 
 } // namespace icpl
 
