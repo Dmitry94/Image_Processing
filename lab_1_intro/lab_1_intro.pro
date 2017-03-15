@@ -14,7 +14,7 @@ TEMPLATE = app
 CONFIG += c++14
 CONFIG += icpl
 CONFIG += gui_library
-CONFIG += console
+#CONFIG += console
 CONFIG += opencv
 
 HEADERS += \

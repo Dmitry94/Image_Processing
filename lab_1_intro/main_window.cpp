@@ -38,9 +38,8 @@ void MainWindow::set_main_image(const QImage &new_image) {
     cv::Mat main_image_hist = icpl::draw_histogram(histograms,
                                                    {cv::Scalar(255, 0, 0),
                                                     cv::Scalar(0, 255, 0),
-                                                    cv::Scalar(0, 0, 255)});
-    cv::resize(main_image_hist, main_image_hist,
-               cv::Size(HIST_WIDTH, HIST_HEIGHT));
+                                                    cv::Scalar(0, 0, 255)},
+                                                   HIST_HEIGHT, HIST_WIDTH);
 
     hist_image = gui::cvmat_to_qimage(main_image_hist);
     hist_image_label->setPixmap(QPixmap::fromImage(hist_image));

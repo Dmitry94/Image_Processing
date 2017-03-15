@@ -51,7 +51,8 @@ std::vector<std::vector<float>> build_histograms(const cv::Mat &src) {
 }
 
 cv::Mat draw_histogram(const std::vector<std::vector<float>> &histograms,
-                       const std::vector<cv::Scalar> &colors) {
+                       const std::vector<cv::Scalar> &colors,
+                       const int height, const int width) {
     const size_t channels = histograms.size();
     if (channels != colors.size()) {
         throw std::length_error("draw_histogram: Histograms count should be "
@@ -65,16 +66,27 @@ cv::Mat draw_histogram(const std::vector<std::vector<float>> &histograms,
         }
     }
 
-    int hist_w = 512; int hist_h = 300;
-    int bin_w = cvRound((double)hist_w / 256);
-    cv::Mat histogram_image(hist_h, hist_w, CV_8UC3, cv::Scalar(0));
+    float max = -1.0;
+    for (size_t i = 0; i < histograms.size(); i++) {
+        for (size_t j = 0; j < histograms[i].size(); j++) {
+            if (histograms[i][j] > max) {
+                max = histograms[i][j];
+            }
+        }
+    }
+    max *= 1.5;
+
+    double bin_w = (double)width / 256.0;
+    cv::Mat histogram_image(height, width, CV_8UC3, cv::Scalar(0));
 
     for (int j = 0; j < 256; j++) {
         for (size_t i = 0; i < channels; i++) {
             cv::line(histogram_image,
-                     cv::Point(bin_w*(j-1), hist_h - cvRound(hist_h * histograms[i][j-1])),
-                     cv::Point(bin_w*(j), hist_h - cvRound(hist_h * histograms[i][j])),
-                     colors[i], 2, 8, 0);
+                     cv::Point(cvRound(bin_w*(j-1)), height -
+                               cvRound(height * histograms[i][j-1] / max)),
+                     cv::Point(cvRound(bin_w*(j)), height -
+                               cvRound(height * histograms[i][j] / max)),
+                     colors[i]);
         }
     }
 

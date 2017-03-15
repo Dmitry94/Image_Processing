@@ -19,14 +19,18 @@ std::vector<std::vector<float>> build_histograms(const cv::Mat &src);
 
 
 /**
- * Creates visual interpretation of histogram.
+ * Creates histograms image.
  *
- * @param histogram[in]     Histogram.
+ * @param histograms[in]    Array of histograms.
+ * @param colors[in]        Color for each array-line.
+ * @param height[in]        Out image height.
+ * @param width[in]         Out image width.
  *
- * @return histogram_image  Image, which represents histogram.
+ * @return image representation.
  */
 cv::Mat draw_histogram(const std::vector<std::vector<float>> &histograms,
-                       const std::vector<cv::Scalar> &colors);
+                       const std::vector<cv::Scalar> &colors,
+                       const int height, const int width);
 
 } // namespace icpl
 
