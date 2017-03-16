@@ -8,13 +8,13 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = lab_1_Base
+TARGET = lab_1_intro
 TEMPLATE = app
 
 CONFIG += c++14
 CONFIG += icpl
 CONFIG += gui_library
-#CONFIG += console
+CONFIG += console
 CONFIG += opencv
 
 HEADERS += \
