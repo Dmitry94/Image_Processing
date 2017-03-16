@@ -121,7 +121,7 @@ void BaseWindow::create_actions() {
 
     QAction *exitAct = new QAction(tr("E&xit"), this);
     exitAct->setShortcut(tr("Ctrl+Q"));
-    connect(save_act, SIGNAL(triggered()), this, SLOT(close()));
+    connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
     QList<QAction*> actions { open_act, save_act, exitAct };
     fileMenu->addActions(actions);
