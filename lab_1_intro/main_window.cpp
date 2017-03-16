@@ -89,13 +89,13 @@ void MainWindow::show_for_area() {
         cv::Mat cv_main_image = gui::cvmat_from_qimage(main_image);
         cv::Rect roi(cv::Point(fst_point.x(), fst_point.y()),
                      cv::Point(snd_point.x(), snd_point.y()));
+
         auto cv_subim = cv_main_image(roi);
+        auto hist_image = gui::cvmat_to_qimage(cv_subim);
 
-        cv_subim += 70;
-
+        cv_subim = cv_subim * 0.7 + cv::Scalar(0, 255, 0) * 0.3;
         auto temp = main_image;
         auto qt_image = gui::cvmat_to_qimage(cv_main_image);
-        auto hist_image = gui::cvmat_to_qimage(cv_subim);
 
         set_main_image(qt_image);
         build_hist(hist_image);
