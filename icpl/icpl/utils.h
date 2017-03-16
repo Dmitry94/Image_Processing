@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <vector>
+#include <functional>
 
 #include <opencv2/core/core.hpp>
 
@@ -31,6 +32,16 @@ std::vector<std::vector<float>> build_histograms(const cv::Mat &src);
 cv::Mat draw_histogram(const std::vector<std::vector<float>> &histograms,
                        const std::vector<cv::Scalar> &colors,
                        const int height, const int width);
+
+/**
+ * Builds look-up-table for brightness values.
+ *
+ * @param func[in]  Function for translation.
+ *
+ * @return look-up-table.
+ */
+std::vector<uchar> build_LUT(const std::function<uchar(uchar)> &func);
+
 
 } // namespace icpl
 
