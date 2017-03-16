@@ -39,7 +39,7 @@ bool BaseWindow::load_image(const QString &file_name) {
 
 void BaseWindow::set_main_image(const QImage &new_image) {
     main_image = new_image;
-    QImage window_image = new_image.scaled((width() - 2 * GAP) * width_koef,
+    QImage window_image = main_image.scaled((width() - 2 * GAP) * width_koef,
                                            (height()- 4 * GAP) * height_koef,
                                            Qt::KeepAspectRatio);
 
@@ -133,7 +133,15 @@ void BaseWindow::update_actions() {
 
 void BaseWindow::resizeEvent(QResizeEvent* event) {
    QMainWindow::resizeEvent(event);
-   this->set_main_image(main_image);
+
+   if (!main_image.isNull()) {
+       QImage window_image = main_image.scaled((width() - 2 * GAP) * width_koef,
+                                              (height()- 4 * GAP) * height_koef,
+                                              Qt::KeepAspectRatio);
+       main_image_label->resize(window_image.size());
+       main_image_label->setPixmap(QPixmap::fromImage(window_image));
+       update_actions();
+   }
 }
 
 }
