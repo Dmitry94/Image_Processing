@@ -11,11 +11,9 @@ TARGET = gui_library
 TEMPLATE = lib
 CONFIG += staticlib c++14
 
-SOURCES += gui_library.cpp \
-    base_window.cpp
+SOURCES += gui_library.cpp
 
-HEADERS += gui_library.h \
-    base_window.h
+HEADERS += gui_library.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

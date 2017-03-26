@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2017-03-01T23:07:28
+# Project created by QtCreator 2017-03-25T16:37:10
 #
 #-------------------------------------------------
 
@@ -8,20 +8,22 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = lab_2_brightness
+TARGET = lab_1_hists
 TEMPLATE = app
 
 CONFIG += c++14
 CONFIG += icpl
 CONFIG += gui_library
-#CONFIG += console
+CONFIG += console
 CONFIG += opencv
 
-HEADERS += \
-    main_window.h
+SOURCES += main.cpp\
+        mainwindow.cpp
 
-SOURCES += main.cpp \
-    main_window.cpp
+HEADERS  += mainwindow.h
+
+FORMS    += mainwindow.ui
+
 
 gui_library {
     unix: LIBS += -L$$OUT_PWD/../gui_library/ -lgui_library
