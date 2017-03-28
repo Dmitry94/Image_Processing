@@ -12,6 +12,7 @@ TARGET = lab_1_hists
 TEMPLATE = app
 
 CONFIG += c++14
+CONFIG += omp optimization
 CONFIG += icpl
 CONFIG += gui_library
 CONFIG += console
@@ -42,4 +43,13 @@ icpl {
 
 opencv {
     LIBS += -lopencv_core -lopencv_highgui -lopencv_imgproc
+}
+
+optimization {
+    QMAKE_CFLAGS_RELEASE       += -O2
+    QMAKE_CFLAGS_DEBUG         += -g
+}
+
+omp {
+    QMAKE_CXXFLAGS += -fopenmp
 }
