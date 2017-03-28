@@ -18,6 +18,13 @@ public:
 
 protected:
     /**
+     * Callback from resize window.
+     *
+     * @param event[in] Resize event.
+     */
+    void resizeEvent(QResizeEvent *event) override;
+
+    /**
      * Callback for mouse button click/release.
      *
      * @param event[in] Event params.

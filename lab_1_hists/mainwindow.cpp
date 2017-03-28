@@ -1,4 +1,5 @@
 #include <QMouseEvent>
+#include <QResizeEvent>
 #include <QtWidgets>
 
 #include <opencv2/opencv.hpp>
@@ -16,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     create_actions();
+    move(100, 100);
 }
 
 MainWindow::~MainWindow() {
@@ -33,16 +35,34 @@ void MainWindow::build_hist(const QImage &image) {
                                                  source_image.height() * 1.25);
 
     QImage hist_image = gui::cvmat_to_qimage(hist_image_cv);
-    ui->hist_label->setPixmap(QPixmap::fromImage(hist_image));
+    auto old_w = ui->src_image_label->width();
+    auto old_h = ui->src_image_label->height();
+    auto resized_hist_im = hist_image.scaled(old_w, old_h);
+    ui->hist_label->setPixmap(QPixmap::fromImage(resized_hist_im));
 }
 
 void MainWindow::set_source_image(const QImage &new_image) {
     source_image = new_image;
 
-    ui->src_image_label->setPixmap(QPixmap::fromImage(source_image));
+    auto old_w = ui->src_image_label->width();
+    auto old_h = ui->src_image_label->height();
+    auto resized_src_im = source_image.scaled(old_w, old_h);
+    ui->src_image_label->setPixmap(QPixmap::fromImage(resized_src_im));
     build_hist(source_image);
 
     update_actions();
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);
+
+    if (!source_image.isNull()) {
+        auto new_w = ui->src_image_label->width();
+        auto new_h = ui->src_image_label->height();
+        auto resized_src_im = source_image.scaled(new_w, new_h);
+        ui->src_image_label->setPixmap(QPixmap::fromImage(resized_src_im));
+        build_hist(source_image);
+    }
 }
 
 QPoint MainWindow::get_image_point(const QPoint &gl_point) {
@@ -144,7 +164,7 @@ bool MainWindow::save_image(const QString &file_name) {
 
 
 void MainWindow::init_image_file_dialog(QFileDialog &dialog,
-                                         QFileDialog::AcceptMode accept_mode) {
+                                        QFileDialog::AcceptMode accept_mode) {
     static bool firstDialog = true;
 
     if (firstDialog) {
@@ -165,6 +185,8 @@ void MainWindow::init_image_file_dialog(QFileDialog &dialog,
     dialog.selectMimeTypeFilter("image/jpeg");
     if (accept_mode == QFileDialog::AcceptSave)
         dialog.setDefaultSuffix("jpg");
+
+    dialog.setDirectory("../../content");
 }
 
 void MainWindow::open() {
