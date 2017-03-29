@@ -15,14 +15,17 @@ std::vector<uchar> build_LUT(const std::function<uchar(uchar)> &func) {
     return LUT;
 }
 
-cv::Mat correct_with_colors(const cv::Mat &source,
-                            const cv::Scalar &src_color,
-                            const cv::Scalar &dst_color) {
-    // For each channel
-    std::vector<std::vector<uchar>> LUTs(3);
+cv::Mat correct_with_reference_colors(const cv::Mat &source,
+                                      const cv::Scalar &src_color,
+                                      const cv::Scalar &dst_color) {
+    if (source.channels() > 4) {
+        throw std::logic_error("correct_with_reference_colors: too much channels!");
+    }
+
+    std::vector<std::vector<uchar>> LUTs(source.channels());
 
 #pragma omp parallel for
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < source.channels(); i++) {
         float cur_ch_koef = dst_color[i] / (float)src_color[i];
         LUTs[i] = build_LUT([&cur_ch_koef](uchar bright)
                                 { return bright * cur_ch_koef; }

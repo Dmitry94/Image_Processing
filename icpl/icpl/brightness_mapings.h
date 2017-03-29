@@ -18,7 +18,7 @@ namespace icpl {
 std::vector<uchar> build_LUT(const std::function<uchar(uchar)> &func);
 
 /**
- * Make correction with reference color.
+ * Make correction with reference colors.
  * Formula:
  *  ch = ch * src / dst
  *
@@ -28,9 +28,9 @@ std::vector<uchar> build_LUT(const std::function<uchar(uchar)> &func);
  *
  * @return Corrected image.
  */
-cv::Mat correct_with_colors(const cv::Mat &source,
-                            const cv::Scalar &src_color,
-                            const cv::Scalar &dst_color);
+cv::Mat correct_with_reference_colors(const cv::Mat &source,
+                                      const cv::Scalar &src_color,
+                                      const cv::Scalar &dst_color);
 
 } // namespace icpl
 
