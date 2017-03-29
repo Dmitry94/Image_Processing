@@ -56,7 +56,9 @@ cv::Mat correct_with_reference_colors(const cv::Mat &source,
     for (int i = 0; i < source.channels(); i++) {
         float cur_ch_koef = dst_color[i] / (float)src_color[i];
         LUTs[i] = build_LUT([&cur_ch_koef](uchar bright)
-                   { return cv::saturate_cast<uchar>(bright * cur_ch_koef); });
+                    {
+                        return cv::saturate_cast<uchar>(bright * cur_ch_koef);
+                    });
     }
 
     cv::Mat result = apply_LUTs(source, LUTs);
@@ -99,8 +101,35 @@ cv::Mat apply_gray_world_effect(const cv::Mat &source) {
     for (int i = 0; i < source.channels(); i++) {
         float cur_ch_avg = channels_avg[i];
         LUTs[i] = build_LUT([image_bright_avg, &cur_ch_avg](uchar bright)
-                   { return cv::saturate_cast<uchar>(bright * image_bright_avg
-                                                     / cur_ch_avg); });
+                    {
+                        return cv::saturate_cast<uchar>(bright * image_bright_avg
+                                                     / cur_ch_avg);
+                    });
+    }
+
+    cv::Mat result = apply_LUTs(source, LUTs);
+    return result;
+}
+
+
+cv::Mat apply_gamma_correction(const cv::Mat &source, const int power) {
+    if (power < 0 || power > 100) {
+        throw std::out_of_range("apply_gamma_correction: range should be "
+                                "in [0..100]");
+    }
+    int new_power = power - 50;
+
+    std::vector<std::vector<uchar>> LUTs(source.channels());
+    #pragma omp parallel for
+    for (int i = 0; i < source.channels(); i++) {
+
+        LUTs[i] = build_LUT([new_power](uchar bright)
+                    {
+                        float koef = std::pow(0.9, new_power);
+                        float real_val = 255 * std::pow((float)bright / 255.0,
+                                                        koef);
+                        return cv::saturate_cast<uchar>(real_val);
+                    });
     }
 
     cv::Mat result = apply_LUTs(source, LUTs);

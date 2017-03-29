@@ -45,6 +45,7 @@ cv::Mat correct_with_reference_colors(const cv::Mat &source,
                                       const cv::Scalar &src_color,
                                       const cv::Scalar &dst_color);
 
+
 /**
  * Apply gray world effect to the image.
  * Formula:
@@ -55,6 +56,18 @@ cv::Mat correct_with_reference_colors(const cv::Mat &source,
  * @return Gray world image.
  */
 cv::Mat apply_gray_world_effect(const cv::Mat &source);
+
+
+/**
+ * Apply gamma correction to the image.
+ *
+ * @param source[in]    Source image.
+ * @param power[in]     Power of the effect, [0..100] range
+ *
+ * @return Result of gamma correction.
+ */
+cv::Mat apply_gamma_correction(const cv::Mat &source, const int power);
+
 
 } // namespace icpl
 
