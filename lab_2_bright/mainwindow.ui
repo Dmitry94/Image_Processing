@@ -33,6 +33,13 @@
       </item>
      </layout>
     </item>
+    <item row="1" column="0">
+     <widget class="QSlider" name="horizontalSlider">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -57,6 +64,8 @@
      <string>Transformation</string>
     </property>
     <addaction name="actionCorrection_with_reference_colors"/>
+    <addaction name="actionGray_world"/>
+    <addaction name="actionGamma_correction"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTransformation"/>
@@ -88,6 +97,16 @@
   <action name="actionCorrection_with_reference_colors">
    <property name="text">
     <string>Correction with reference colors</string>
+   </property>
+  </action>
+  <action name="actionGray_world">
+   <property name="text">
+    <string>Gray world</string>
+   </property>
+  </action>
+  <action name="actionGamma_correction">
+   <property name="text">
+    <string>Gamma correction</string>
    </property>
   </action>
  </widget>

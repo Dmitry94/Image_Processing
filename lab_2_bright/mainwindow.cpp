@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     create_actions();
+    update_actions();
     move(100, 100);
 }
 
@@ -27,11 +28,13 @@ MainWindow::~MainWindow() {
 
 void MainWindow::set_source_image(const QImage &new_image) {
     source_image = new_image;
+    transformation = Transformation::NONE;
 
     auto new_w = ui->l_source->width();
     auto new_h = ui->l_source->height();
     auto resized_src_im = source_image.scaled(new_w, new_h);
     ui->l_source->setPixmap(QPixmap::fromImage(resized_src_im));
+    ui->l_result->setPixmap(QPixmap());
 
     update_actions();
 }
@@ -44,6 +47,7 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
         auto new_h = ui->l_source->height();
         auto resized_src_im = source_image.scaled(new_w, new_h);
         ui->l_source->setPixmap(QPixmap::fromImage(resized_src_im));
+        apply_transform();
     }
 }
 
@@ -135,67 +139,116 @@ void MainWindow::create_actions() {
 
     connect(ui->actionCorrection_with_reference_colors, SIGNAL(triggered()),
             this, SLOT(reference_correction_choose()));
+    connect(ui->actionGray_world, SIGNAL(triggered()),
+            this, SLOT(gray_world_choose()));
+    connect(ui->actionGamma_correction, SIGNAL(triggered()),
+            this, SLOT(gamma_correction_choose()));
+    connect(ui->horizontalSlider, SIGNAL(valueChanged(int)), this,
+            SLOT(slider_value_changed(int)));
 }
 
 void MainWindow::update_actions() {
     ui->actionSave_as->setEnabled(!source_image.isNull());
+    ui->horizontalSlider->setHidden(transformation != Transformation::GAMMA_CORRECTION);
 }
 
 /** Correction slots */
 void MainWindow::reference_correction_choose() {
     transformation = Transformation::REFERENCE_COLORS;
+    update_actions();
     apply_transform();
+}
+
+void MainWindow::gray_world_choose() {
+    transformation = Transformation::GRAY_WORLD;
+    update_actions();
+    apply_transform();
+}
+
+void MainWindow::gamma_correction_choose() {
+    transformation = Transformation::GAMMA_CORRECTION;
+    update_actions();
+    apply_transform();
+}
+
+void MainWindow::slider_value_changed(int) {
+    if (transformation == Transformation::GAMMA_CORRECTION) {
+        apply_transform();
+    }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event) {
     QMainWindow::mousePressEvent(event);
 
-    if (event->button() == Qt::LeftButton) {
-        src_color_point = event->pos();
-    } else if (event->button() == Qt::RightButton) {
-        dst_color_point = event->pos();
-    }
-
     if (transformation == Transformation::REFERENCE_COLORS) {
+        if (event->button() == Qt::LeftButton) {
+            src_color_point = event->pos();
+        } else if (event->button() == Qt::RightButton) {
+            dst_color_point = event->pos();
+        }
+
         apply_transform();
     }
 }
 
 void MainWindow::apply_transform() {
+    if (source_image.isNull()) {
+        return;
+    }
     cv::Mat src_image_cv = gui::cvmat_from_qimage(source_image);
     cv::Mat result;
 
     switch (transformation) {
-    case Transformation::REFERENCE_COLORS:
-        if (src_color_point.isNull() || dst_color_point.isNull()) {
-            return;
-        }
-        auto src_image_point = get_image_point(src_color_point);
-        auto dst_image_point = get_image_point(dst_color_point);
-
-        cv::Scalar src_color, dst_color;
-        if (src_image_cv.channels() == 3) {
-            src_color = src_image_cv.at<cv::Vec3b>(src_image_point.y(),
-                                                   src_image_point.x());
-            dst_color = src_image_cv.at<cv::Vec3b>(dst_image_point.y(),
-                                                   dst_image_point.x());
-        } else if (src_image_cv.channels() == 1) {
-            src_color = src_image_cv.at<uchar>(src_image_point.y(),
-                                               src_image_point.x());
-            dst_color = src_image_cv.at<uchar>(dst_image_point.y(),
-                                               dst_image_point.x());
-        } else if (src_image_cv.channels() == 4) {
-            src_color = src_image_cv.at<cv::Vec4b>(src_image_point.y(),
-                                                   src_image_point.x());
-            dst_color = src_image_cv.at<cv::Vec4b>(dst_image_point.y(),
-                                                   dst_image_point.x());
-        } else {
-            throw std::logic_error("apply_transform: Channels aren't good!");
+        case Transformation::NONE: {
+            result = src_image_cv;
+            break;
         }
 
-        result = icpl::correct_with_reference_colors(src_image_cv,
-                                                     src_color, dst_color);
-        break;
+        case Transformation::REFERENCE_COLORS: {
+            if (src_color_point.isNull() || dst_color_point.isNull()) {
+                result = src_image_cv;
+                return;
+            }
+            auto src_image_point = get_image_point(src_color_point);
+            auto dst_image_point = get_image_point(dst_color_point);
+
+            cv::Scalar src_color(0), dst_color(0);
+            if (src_image_cv.channels() == 3) {
+                src_color = src_image_cv.at<cv::Vec3b>(src_image_point.y(),
+                                                       src_image_point.x());
+                dst_color = src_image_cv.at<cv::Vec3b>(dst_image_point.y(),
+                                                       dst_image_point.x());
+            } else if (src_image_cv.channels() == 1) {
+                src_color = src_image_cv.at<uchar>(src_image_point.y(),
+                                                   src_image_point.x());
+                dst_color = src_image_cv.at<uchar>(dst_image_point.y(),
+                                                   dst_image_point.x());
+            } else if (src_image_cv.channels() == 4) {
+                src_color = src_image_cv.at<cv::Vec4b>(src_image_point.y(),
+                                                       src_image_point.x());
+                dst_color = src_image_cv.at<cv::Vec4b>(dst_image_point.y(),
+                                                       dst_image_point.x());
+            } else {
+                throw std::logic_error("apply_transform: Channels aren't good!");
+            }
+
+            result = icpl::correct_with_reference_colors(src_image_cv,
+                                                         src_color, dst_color);
+            break;
+        }
+
+
+        case Transformation::GRAY_WORLD: {
+            result = icpl::apply_gray_world_effect(src_image_cv);
+            break;
+        }
+
+
+        case Transformation::GAMMA_CORRECTION: {
+            result = icpl::apply_gamma_correction(src_image_cv,
+                                                  ui->horizontalSlider->value());
+            break;
+        }
     }
 
     QImage result_qimage = gui::cvmat_to_qimage(result);

@@ -12,7 +12,8 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-    enum class Transformation { REFERENCE_COLORS };
+    enum class Transformation { NONE, REFERENCE_COLORS, GRAY_WORLD,
+                                GAMMA_CORRECTION };
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -40,7 +41,7 @@ private:
     QImage source_image;
 
     /** Transformation */
-    Transformation transformation;
+    Transformation transformation = Transformation::NONE;
 
     /** Reference colors for correction */
     QPoint src_color_point;
@@ -107,6 +108,10 @@ private slots:
     void save_as();
 
     void reference_correction_choose();
+    void gray_world_choose();
+    void gamma_correction_choose();
+
+    void slider_value_changed(int);
 };
 
 #endif // MAINWINDOW_H
