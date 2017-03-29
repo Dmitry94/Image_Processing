@@ -31,8 +31,7 @@ void MainWindow::build_hist(const QImage &image) {
                                                 {cv::Scalar(255, 0, 0),
                                                  cv::Scalar(0, 255, 0),
                                                  cv::Scalar(0, 0, 255)},
-                                                 source_image.height(),
-                                                 source_image.height() * 1.25);
+                                                 600, 600);
 
     QImage hist_image = gui::cvmat_to_qimage(hist_image_cv);
     auto old_w = ui->src_image_label->width();
