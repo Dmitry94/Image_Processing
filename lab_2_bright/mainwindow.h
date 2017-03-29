@@ -12,10 +12,19 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    enum class Transformation { REFERENCE_COLORS };
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 protected:
+    /**
+     * Callback for mouse button click/release.
+     *
+     * @param event[in] Event params.
+     */
+    void mousePressEvent(QMouseEvent *event) override;
+
     /**
      * Callback from resize window.
      *
@@ -29,6 +38,13 @@ private:
 
     /** Source image */
     QImage source_image;
+
+    /** Transformation */
+    Transformation transformation;
+
+    /** Reference colors for correction */
+    QPoint src_color_point;
+    QPoint dst_color_point;
 
     /**
      * Creates menu actions.
@@ -74,9 +90,23 @@ private:
     void init_image_file_dialog(QFileDialog &dialog,
                                 QFileDialog::AcceptMode accept_mode);
 
+    /** Apply transformation and show result */
+    void apply_transform();
+
+    /**
+     * Get point from window to original image.
+     *
+     * @param gl_point[in]  Window coordinates.
+     *
+     * @return image coordinates.
+     */
+    QPoint get_image_point(const QPoint &gl_point);
+
 private slots:
     void open();
     void save_as();
+
+    void reference_correction_choose();
 };
 
 #endif // MAINWINDOW_H

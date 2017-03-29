@@ -1,14 +1,16 @@
 #include <QResizeEvent>
+#include <QMouseEvent>
 #include <QtWidgets>
 
 #include <opencv2/opencv.hpp>
 
-#include <icpl/utils.h>
+#include <icpl/brightness_mapings.h>
 
 #include <gui_library.h>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -129,8 +131,97 @@ void MainWindow::create_actions() {
 
     ui->actionExit->setShortcut(tr("Ctrl+Q"));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
+
+
+    connect(ui->actionCorrection_with_reference_colors, SIGNAL(triggered()),
+            this, SLOT(reference_correction_choose()));
 }
 
 void MainWindow::update_actions() {
     ui->actionSave_as->setEnabled(!source_image.isNull());
+}
+
+/** Correction slots */
+void MainWindow::reference_correction_choose() {
+    transformation = Transformation::REFERENCE_COLORS;
+    apply_transform();
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event) {
+    QMainWindow::mousePressEvent(event);
+
+    if (event->button() == Qt::LeftButton) {
+        src_color_point = event->pos();
+    } else if (event->button() == Qt::RightButton) {
+        dst_color_point = event->pos();
+    }
+
+    if (transformation == Transformation::REFERENCE_COLORS) {
+        apply_transform();
+    }
+}
+
+void MainWindow::apply_transform() {
+    cv::Mat src_image_cv = gui::cvmat_from_qimage(source_image);
+    cv::Mat result;
+
+    switch (transformation) {
+    case Transformation::REFERENCE_COLORS:
+        if (src_color_point.isNull() || dst_color_point.isNull()) {
+            return;
+        }
+        auto src_image_point = get_image_point(src_color_point);
+        auto dst_image_point = get_image_point(dst_color_point);
+
+        cv::Scalar src_color, dst_color;
+        if (src_image_cv.channels() == 3) {
+            src_color = src_image_cv.at<cv::Vec3b>(src_image_point.y(),
+                                                   src_image_point.x());
+            dst_color = src_image_cv.at<cv::Vec3b>(dst_image_point.y(),
+                                                   dst_image_point.x());
+        } else if (src_image_cv.channels() == 1) {
+            src_color = src_image_cv.at<uchar>(src_image_point.y(),
+                                               src_image_point.x());
+            dst_color = src_image_cv.at<uchar>(dst_image_point.y(),
+                                               dst_image_point.x());
+        } else if (src_image_cv.channels() == 4) {
+            src_color = src_image_cv.at<cv::Vec4b>(src_image_point.y(),
+                                                   src_image_point.x());
+            dst_color = src_image_cv.at<cv::Vec4b>(dst_image_point.y(),
+                                                   dst_image_point.x());
+        } else {
+            throw std::logic_error("apply_transform: Channels aren't good!");
+        }
+
+        result = icpl::correct_with_reference_colors(src_image_cv,
+                                                     src_color, dst_color);
+        break;
+    }
+
+    QImage result_qimage = gui::cvmat_to_qimage(result);
+    auto new_w = ui->l_result->width();
+    auto new_h = ui->l_result->height();
+    auto resized_result = result_qimage.scaled(new_w, new_h);
+    ui->l_result->setPixmap(QPixmap::fromImage(resized_result));
+}
+
+QPoint MainWindow::get_image_point(const QPoint &gl_point) {
+    int gl_x = gl_point.x();
+    int gl_y = gl_point.y();
+
+    int im_gl_x = ui->l_source->pos().x();
+    int im_gl_y = ui->l_source->pos().y();
+    int im_w = ui->l_source->width();
+    int im_h = ui->l_source->height();
+
+    if (gl_x >= im_gl_x && gl_y >= im_gl_y &&
+        gl_x <= im_gl_x + im_w &&
+        gl_y <= im_gl_y + im_h)
+    {
+        int src_x = cvRound((gl_x - im_gl_x) / (float)im_w * source_image.width());
+        int src_y = cvRound((gl_y - im_gl_y) / (float)im_h * source_image.height());
+        return QPoint(src_x, src_y);
+    } else {
+        return QPoint();
+    }
 }

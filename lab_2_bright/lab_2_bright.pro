@@ -15,7 +15,6 @@ CONFIG += c++14
 CONFIG += omp optimization
 CONFIG += icpl
 CONFIG += gui_library
-CONFIG += console
 CONFIG += opencv
 
 SOURCES += main.cpp\

@@ -52,7 +52,14 @@
     <addaction name="actionSave_as"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuTransformation">
+    <property name="title">
+     <string>Transformation</string>
+    </property>
+    <addaction name="actionCorrection_with_reference_colors"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuTransformation"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -76,6 +83,11 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionCorrection_with_reference_colors">
+   <property name="text">
+    <string>Correction with reference colors</string>
    </property>
   </action>
  </widget>
