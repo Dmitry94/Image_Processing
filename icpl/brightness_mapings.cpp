@@ -15,6 +15,34 @@ std::vector<uchar> build_LUT(const std::function<uchar(uchar)> &func) {
     return LUT;
 }
 
+cv::Mat apply_LUTs(const cv::Mat &source,
+                   const std::vector<std::vector<uchar>> &LUTs) {
+    cv::Mat result = source.clone();
+    int rows = result.rows;
+    int cols = result.cols;
+    int channels = result.channels();
+    if (result.isContinuous()) {
+        cols = rows * cols;
+        rows = 1;
+    }
+
+    #pragma omp parallel for if(rows > 1)
+    for (int i = 0; i < rows; i++) {
+        uchar *cur_line = result.ptr(i);
+
+        #pragma omp parallel for if(rows == 1)
+        for (int j = 0; j < cols; j++) {
+            for (int ch = 0; ch < channels; ch++) {
+                int cur_index = j * channels + ch;
+                uchar cur_value = cur_line[cur_index];
+                cur_line[cur_index] = LUTs[ch][cur_value];
+            }
+        }
+    }
+
+    return result;
+}
+
 cv::Mat correct_with_reference_colors(const cv::Mat &source,
                                       const cv::Scalar &src_color,
                                       const cv::Scalar &dst_color) {
@@ -28,33 +56,54 @@ cv::Mat correct_with_reference_colors(const cv::Mat &source,
     for (int i = 0; i < source.channels(); i++) {
         float cur_ch_koef = dst_color[i] / (float)src_color[i];
         LUTs[i] = build_LUT([&cur_ch_koef](uchar bright)
-                                { return bright * cur_ch_koef; }
-                            );
+                   { return cv::saturate_cast<uchar>(bright * cur_ch_koef); });
     }
 
-    cv::Mat result = source.clone();
-    int rows = result.rows;
-    int cols = result.cols;
-    int channels = result.channels();
-    if (result.isContinuous()) {
+    cv::Mat result = apply_LUTs(source, LUTs);
+    return result;
+}
+
+
+cv::Mat apply_gray_world_effect(const cv::Mat &source) {
+    int rows = source.rows;
+    int cols = source.cols;
+    int channels = source.channels();
+    if (source.isContinuous()) {
         cols = rows * cols;
         rows = 1;
     }
 
-#pragma omp parallel for if(rows > 1)
+    std::vector<float> channels_avg(channels);
+    float image_bright_avg = 0.0;
+    #pragma omp parallel for if(rows > 1)
     for (int i = 0; i < rows; i++) {
-        uchar *cur_line = result.ptr(i);
+        const uchar *cur_line = source.ptr(i);
 
-#pragma omp parallel for if(rows == 1)
+        #pragma omp parallel for if(rows == 1)
         for (int j = 0; j < cols; j++) {
-            for (int ch = 0; ch < result.channels(); ch++) {
-                int cur_index = j * channels + ch;
-                uchar cur_value = cur_line[cur_index];
-                cur_line[cur_index] = LUTs[ch][cur_value];
+            for (int ch = 0; ch < channels; ch++) {
+                channels_avg[ch] += cur_line[j * channels + ch];
             }
         }
     }
 
+    for (size_t i = 0; i < channels_avg.size(); i++) {
+        channels_avg[i] /= rows * cols;
+        image_bright_avg += channels_avg[i];
+    }
+    image_bright_avg /= channels;
+
+
+    std::vector<std::vector<uchar>> LUTs(source.channels());
+    #pragma omp parallel for
+    for (int i = 0; i < source.channels(); i++) {
+        float cur_ch_avg = channels_avg[i];
+        LUTs[i] = build_LUT([image_bright_avg, &cur_ch_avg](uchar bright)
+                   { return cv::saturate_cast<uchar>(bright * image_bright_avg
+                                                     / cur_ch_avg); });
+    }
+
+    cv::Mat result = apply_LUTs(source, LUTs);
     return result;
 }
 
