@@ -93,14 +93,4 @@ cv::Mat draw_histogram(const std::vector<std::vector<float>> &histograms,
     return histogram_image;
 }
 
-std::vector<uchar> build_LUT(const std::function<uchar(uchar)> &func) {
-    std::vector<uchar> LUT(256);
-
-    for (auto i = 0; i < 256; i++) {
-        LUT[i] = func(i);
-    }
-
-    return LUT;
-}
-
 } // namespace icpl

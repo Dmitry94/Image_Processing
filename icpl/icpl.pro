@@ -17,10 +17,12 @@ CONFIG += omp optimization
 DEFINES += ICPL_LIBRARY
 
 SOURCES += \
-    utils.cpp
+    utils.cpp \
+    brightness_mapings.cpp
 
 HEADERS += icpl.h \
-    icpl/utils.h
+    icpl/utils.h \
+    icpl/brightness_mapings.h
 
 optimization {
     QMAKE_CFLAGS_RELEASE       += -O2
