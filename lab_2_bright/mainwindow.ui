@@ -66,6 +66,7 @@
     <addaction name="actionCorrection_with_reference_colors"/>
     <addaction name="actionGray_world"/>
     <addaction name="actionGamma_correction"/>
+    <addaction name="actionContrast_correction"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTransformation"/>
@@ -107,6 +108,11 @@
   <action name="actionGamma_correction">
    <property name="text">
     <string>Gamma correction</string>
+   </property>
+  </action>
+  <action name="actionContrast_correction">
+   <property name="text">
+    <string>Contrast correction</string>
    </property>
   </action>
  </widget>

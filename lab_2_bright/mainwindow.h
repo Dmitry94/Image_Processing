@@ -13,7 +13,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
     enum class Transformation { NONE, REFERENCE_COLORS, GRAY_WORLD,
-                                GAMMA_CORRECTION };
+                                GAMMA_CORRECTION, CONTRAST_CORRECTION };
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -110,6 +110,7 @@ private slots:
     void reference_correction_choose();
     void gray_world_choose();
     void gamma_correction_choose();
+    void contrast_correction_choose();
 
     void slider_value_changed(int);
 };

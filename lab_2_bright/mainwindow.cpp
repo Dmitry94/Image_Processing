@@ -143,13 +143,18 @@ void MainWindow::create_actions() {
             this, SLOT(gray_world_choose()));
     connect(ui->actionGamma_correction, SIGNAL(triggered()),
             this, SLOT(gamma_correction_choose()));
+    connect(ui->actionContrast_correction, SIGNAL(triggered()),
+            this, SLOT(contrast_correction_choose()));
     connect(ui->horizontalSlider, SIGNAL(valueChanged(int)), this,
             SLOT(slider_value_changed(int)));
 }
 
 void MainWindow::update_actions() {
     ui->actionSave_as->setEnabled(!source_image.isNull());
-    ui->horizontalSlider->setHidden(transformation != Transformation::GAMMA_CORRECTION);
+    ui->horizontalSlider->setHidden(
+                transformation != Transformation::GAMMA_CORRECTION &&
+                transformation != Transformation::CONTRAST_CORRECTION
+            );
 }
 
 /** Correction slots */
@@ -168,11 +173,20 @@ void MainWindow::gray_world_choose() {
 void MainWindow::gamma_correction_choose() {
     transformation = Transformation::GAMMA_CORRECTION;
     update_actions();
+    ui->horizontalSlider->setValue(50);
+    apply_transform();
+}
+
+void MainWindow::contrast_correction_choose() {
+    transformation = Transformation::CONTRAST_CORRECTION;
+    update_actions();
+    ui->horizontalSlider->setValue(50);
     apply_transform();
 }
 
 void MainWindow::slider_value_changed(int) {
-    if (transformation == Transformation::GAMMA_CORRECTION) {
+    if (transformation == Transformation::GAMMA_CORRECTION ||
+        transformation == Transformation::CONTRAST_CORRECTION) {
         apply_transform();
     }
 }
@@ -247,6 +261,12 @@ void MainWindow::apply_transform() {
         case Transformation::GAMMA_CORRECTION: {
             result = icpl::apply_gamma_correction(src_image_cv,
                                                   ui->horizontalSlider->value());
+            break;
+        }
+
+        case Transformation::CONTRAST_CORRECTION: {
+            result = icpl::apply_contrast_correction(src_image_cv,
+                                                     ui->horizontalSlider->value());
             break;
         }
     }
