@@ -67,6 +67,8 @@
     <addaction name="actionGray_world"/>
     <addaction name="actionGamma_correction"/>
     <addaction name="actionContrast_correction"/>
+    <addaction name="actionHistogram_normalization"/>
+    <addaction name="actionHistogram_equalization"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTransformation"/>
@@ -113,6 +115,16 @@
   <action name="actionContrast_correction">
    <property name="text">
     <string>Contrast correction</string>
+   </property>
+  </action>
+  <action name="actionHistogram_normalization">
+   <property name="text">
+    <string>Histogram normalization</string>
+   </property>
+  </action>
+  <action name="actionHistogram_equalization">
+   <property name="text">
+    <string>Histogram equalization</string>
    </property>
   </action>
  </widget>

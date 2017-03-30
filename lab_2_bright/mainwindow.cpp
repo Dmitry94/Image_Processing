@@ -145,6 +145,10 @@ void MainWindow::create_actions() {
             this, SLOT(gamma_correction_choose()));
     connect(ui->actionContrast_correction, SIGNAL(triggered()),
             this, SLOT(contrast_correction_choose()));
+    connect(ui->actionHistogram_normalization, SIGNAL(triggered()),
+            this, SLOT(hist_norm_choose()));
+    connect(ui->actionHistogram_equalization, SIGNAL(triggered()),
+            this, SLOT(hist_eq_choose()));
     connect(ui->horizontalSlider, SIGNAL(valueChanged(int)), this,
             SLOT(slider_value_changed(int)));
 }
@@ -181,6 +185,18 @@ void MainWindow::contrast_correction_choose() {
     transformation = Transformation::CONTRAST_CORRECTION;
     update_actions();
     ui->horizontalSlider->setValue(50);
+    apply_transform();
+}
+
+void MainWindow::hist_norm_choose() {
+    transformation = Transformation::HIST_NORMALIZATION;
+    update_actions();
+    apply_transform();
+}
+
+void MainWindow::hist_eq_choose() {
+    transformation = Transformation::HIST_EQUALIZATION;
+    update_actions();
     apply_transform();
 }
 
@@ -267,6 +283,16 @@ void MainWindow::apply_transform() {
         case Transformation::CONTRAST_CORRECTION: {
             result = icpl::apply_contrast_correction(src_image_cv,
                                                      ui->horizontalSlider->value());
+            break;
+        }
+
+        case Transformation::HIST_NORMALIZATION: {
+            result = icpl::apply_hist_normalization(src_image_cv, 2, 3);
+            break;
+        }
+
+        case Transformation::HIST_EQUALIZATION: {
+            result = icpl::apply_hist_equalization(src_image_cv);
             break;
         }
     }
