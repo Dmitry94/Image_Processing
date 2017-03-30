@@ -136,4 +136,44 @@ cv::Mat apply_gamma_correction(const cv::Mat &source, const int power) {
     return result;
 }
 
+
+cv::Mat apply_contrast_correction(const cv::Mat &source, const int power) {
+    if (power < 0 || power > 100) {
+        throw std::out_of_range("apply_gamma_correction: range should be "
+                                "in [0..100]");
+    }
+    int new_power = power - 50;
+
+    std::vector<std::vector<uchar>> LUTs(source.channels());
+    #pragma omp parallel for
+    for (int i = 0; i < source.channels(); i++) {
+
+        LUTs[i] = build_LUT([new_power](uchar bright)
+                    {
+                         int s1 = 50 - new_power;
+                         int r1 = 50 + 87.5 * new_power / 50.0;
+
+                         int s2 = 205 + new_power;
+                         int r2 = 205 - 87.5 * new_power / 50.0;
+
+                         if (bright <= r1) {
+                             return cv::saturate_cast<uchar>(s1 * bright /
+                                                             (r1 + 1));
+                         }
+
+                         if (bright <= r2) {
+                             return cv::saturate_cast<uchar>((bright - r1) *
+                                        (s2 - s1) / (r2 - r1 + 1) + s1);
+                         }
+
+                         return cv::saturate_cast<uchar>((bright - r2) *
+                                                         (255 - s2) /
+                                                         (255 - r2 + 1) + s2);
+                    });
+    }
+
+    cv::Mat result = apply_LUTs(source, LUTs);
+    return result;
+}
+
 } //namespace icpl

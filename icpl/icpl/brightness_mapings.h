@@ -69,6 +69,17 @@ cv::Mat apply_gray_world_effect(const cv::Mat &source);
 cv::Mat apply_gamma_correction(const cv::Mat &source, const int power);
 
 
+/**
+ * Apply contrast correction to the image.
+ *
+ * @param source[in]    Source image.
+ * @param power[in]     Power of the effect, [0..100] range
+ *
+ * @return Result of contrast correction.
+ */
+cv::Mat apply_contrast_correction(const cv::Mat &source, const int power);
+
+
 } // namespace icpl
 
 #endif // BRIGHTNESS_MAPINGS_H
