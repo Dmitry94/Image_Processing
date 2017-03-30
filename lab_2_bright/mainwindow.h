@@ -38,8 +38,9 @@ private:
     /** UI from form */
     Ui::MainWindow *ui;
 
-    /** Source image */
+    /** Source and result image */
     QImage source_image;
+    QImage result_image;
 
     /** Transformation */
     Transformation transformation = Transformation::NONE;

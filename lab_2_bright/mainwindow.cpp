@@ -58,7 +58,8 @@ bool MainWindow::load_image(const QString &file_name) {
     if (new_image.isNull()) {
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
                                  tr("Cannot load %1: %2")
-                                 .arg(QDir::toNativeSeparators(file_name), reader.errorString()));
+                                 .arg(QDir::toNativeSeparators(file_name),
+                                      reader.errorString()));
         return false;
     }
 
@@ -71,7 +72,7 @@ bool MainWindow::load_image(const QString &file_name) {
 bool MainWindow::save_image(const QString &file_name) {
     QImageWriter writer(file_name);
 
-    if (!writer.write(source_image)) {
+    if (!writer.write(result_image)) {
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
                                  tr("Cannot write %1: %2")
                                  .arg(QDir::toNativeSeparators(file_name)),
@@ -243,23 +244,13 @@ void MainWindow::apply_transform() {
             auto dst_image_point = get_image_point(dst_color_point);
 
             cv::Scalar src_color(0), dst_color(0);
-            if (src_image_cv.channels() == 3) {
-                src_color = src_image_cv.at<cv::Vec3b>(src_image_point.y(),
-                                                       src_image_point.x());
-                dst_color = src_image_cv.at<cv::Vec3b>(dst_image_point.y(),
-                                                       dst_image_point.x());
-            } else if (src_image_cv.channels() == 1) {
-                src_color = src_image_cv.at<uchar>(src_image_point.y(),
-                                                   src_image_point.x());
-                dst_color = src_image_cv.at<uchar>(dst_image_point.y(),
-                                                   dst_image_point.x());
-            } else if (src_image_cv.channels() == 4) {
-                src_color = src_image_cv.at<cv::Vec4b>(src_image_point.y(),
-                                                       src_image_point.x());
-                dst_color = src_image_cv.at<cv::Vec4b>(dst_image_point.y(),
-                                                       dst_image_point.x());
-            } else {
-                throw std::logic_error("apply_transform: Channels aren't good!");
+            const uchar *src_rgb = src_image_cv.ptr(src_image_point.y()) +
+                                                    src_image_point.x() * src_image_cv.channels();
+            const uchar *dst_rgb = src_image_cv.ptr(dst_image_point.y()) +
+                                                    dst_image_point.x() * src_image_cv.channels();
+            for (int i = 0; i < src_image_cv.channels(); i++) {
+                src_color[i] = src_rgb[i];
+                dst_color[i] = dst_rgb[i];
             }
 
             result = icpl::correct_with_reference_colors(src_image_cv,
@@ -297,10 +288,10 @@ void MainWindow::apply_transform() {
         }
     }
 
-    QImage result_qimage = gui::cvmat_to_qimage(result);
+    result_image = gui::cvmat_to_qimage(result);
     auto new_w = ui->l_result->width();
     auto new_h = ui->l_result->height();
-    auto resized_result = result_qimage.scaled(new_w, new_h);
+    auto resized_result = result_image.scaled(new_w, new_h);
     ui->l_result->setPixmap(QPixmap::fromImage(resized_result));
 }
 
