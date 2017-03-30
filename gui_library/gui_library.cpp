@@ -25,27 +25,27 @@ QImage cvmat_to_qimage(const cv::Mat& image) {
          }
 
          case CV_8UC1: {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+//#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
             QImage qimage(image.data, image.cols, image.rows,
                          static_cast<int>(image.step),
                          QImage::Format_Grayscale8);
-#else
-            static QVector<QRgb>  sColorTable;
+//#else
+//            static QVector<QRgb>  sColorTable;
 
-            // only create our color table the first time
-            if (sColorTable.isEmpty()) {
-               sColorTable.resize(256);
+//            // only create our color table the first time
+//            if (sColorTable.isEmpty()) {
+//               sColorTable.resize(256);
 
-               for (int i = 0; i < 256; i++) {
-                  sColorTable[i] = qRgb(i, i, i);
-               }
-            }
+//               for (int i = 0; i < 256; i++) {
+//                  sColorTable[i] = qRgb(i, i, i);
+//               }
+//            }
 
-            QImage image(image.data, image.cols, image.rows,
-                         static_cast<int>(image.step),
-                         QImage::Format_Indexed8);
-            image.setColorTable(sColorTable);
-#endif
+//            QImage image(image.data, image.cols, image.rows,
+//                         static_cast<int>(image.step),
+//                         QImage::Format_Indexed8);
+//            image.setColorTable(sColorTable);
+//#endif
 
             return qimage.copy();
          }
