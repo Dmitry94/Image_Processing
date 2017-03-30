@@ -80,6 +80,29 @@ cv::Mat apply_gamma_correction(const cv::Mat &source, const int power);
 cv::Mat apply_contrast_correction(const cv::Mat &source, const int power);
 
 
+/**
+ * Apply histogram normalization to the image.
+ * It's just linear transform.
+ *
+ * @param source[in]    Source image.
+ * @param k[in]         Koef to x.
+ * @param b[in]         Offset.
+ *
+ * @return Image with normalizaed hist.
+ */
+cv::Mat apply_hist_normalization(const cv::Mat &source, const int k, const int b);
+
+
+/**
+ * Apply histogram equalization to the image.
+ *
+ * @param source[in]    Source image.
+ *
+ * @return Image with equalizaed histogram.
+ */
+cv::Mat apply_hist_equalization(const cv::Mat &source);
+
+
 } // namespace icpl
 
 #endif // BRIGHTNESS_MAPINGS_H

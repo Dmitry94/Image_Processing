@@ -2,6 +2,7 @@
 #include <opencv2/opencv.hpp>
 
 #include <icpl/brightness_mapings.h>
+#include <icpl/utils.h>
 
 namespace icpl {
 
@@ -175,5 +176,47 @@ cv::Mat apply_contrast_correction(const cv::Mat &source, const int power) {
     cv::Mat result = apply_LUTs(source, LUTs);
     return result;
 }
+
+
+cv::Mat apply_hist_normalization(const cv::Mat &source, const int k, const int b) {
+    std::vector<std::vector<uchar>> LUTs(source.channels());
+    #pragma omp parallel for
+    for (int i = 0; i < source.channels(); i++) {
+
+        LUTs[i] = build_LUT([k, b](uchar bright)
+                    {
+                        return cv::saturate_cast<uchar>(bright * k + b);
+                    });
+    }
+
+    cv::Mat result = apply_LUTs(source, LUTs);
+    return result;
+}
+
+
+cv::Mat apply_hist_equalization(const cv::Mat &source) {
+    auto histograms = build_histograms(source);
+
+    std::vector<std::vector<uchar>> LUTs(source.channels());
+    #pragma omp parallel for
+    for (int i = 0; i < source.channels(); i++) {
+        auto cur_ch_hist = histograms[i];
+        float sum = std::accumulate(cur_ch_hist.begin(),
+                                    cur_ch_hist.end(), 0.0);
+
+        LUTs[i] = build_LUT([&cur_ch_hist, &sum](uchar bright)
+                    {
+                        float sub_sum = std::accumulate(cur_ch_hist.begin(),
+                                                        cur_ch_hist.begin() +
+                                                        bright,
+                                                        0.0);
+                        return cv::saturate_cast<uchar>(255.0 * sub_sum / sum);
+                    });
+    }
+
+    cv::Mat result = apply_LUTs(source, LUTs);
+    return result;
+}
+
 
 } //namespace icpl
