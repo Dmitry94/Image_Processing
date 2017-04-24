@@ -1,8 +1,17 @@
+"""
+    This module contains captcha generator.
+"""
+
 import os
+import random
+import collections
 import numpy as np
 
 from captcha.image import ImageCaptcha
 from matplotlib import pyplot as plt
+
+
+CaptchaSample = collections.namedtuple('CaptchaSample', ['captcha', 'text'])
 
 
 class CaptchaGenerator(object):
@@ -10,7 +19,8 @@ class CaptchaGenerator(object):
         Class that incapsulates captcha generation.
         Constructor gets fonts directory as inputs.
     """
-    def __init__(self, fonts_dir, width=160, height=60):
+    def __init__(self, fonts_dir, alphabet, captcha_size,
+                 width=160, height=60):
         fonts = []
         for file in os.listdir("fonts"):
             if file.endswith(".ttf"):
@@ -20,22 +30,18 @@ class CaptchaGenerator(object):
         self.height = height
         self.image_captcha_gen = ImageCaptcha(fonts=fonts,
                                               height=height, width=width)
-
-    def chariter(self, filelike):
-        octet = filelike.read(1)
-        while octet:
-            yield ord(octet)
-            octet = filelike.read(1)
+        self.alphabet = alphabet
+        self.captcha_size = captcha_size
 
     def get_samples(self, count):
         """
             Generates samples using fonts from constructor.
         """
+        samples = []
         for i in xrange(count):
-            data = self.image_captcha_gen.generate_image('1234')
-            data = np.array(data)
-            plt.imshow(data)
-            plt.show()
+            captcha_text = random.sample(self.alphabet, self.captcha_size)
+            data = self.image_captcha_gen.generate_image(captcha_text)
+            captcha = np.array(data)
+            cur_sample = CaptchaSample(captcha=captcha, text=captcha_text)
+            samples.append(cur_sample)
 
-generator = CaptchaGenerator("fonts")
-generator.get_samples(100)
