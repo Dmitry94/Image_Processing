@@ -8,7 +8,6 @@ import collections
 import numpy as np
 
 from captcha.image import ImageCaptcha
-from matplotlib import pyplot as plt
 
 
 CaptchaSample = collections.namedtuple('CaptchaSample', ['captcha', 'text'])
@@ -17,7 +16,6 @@ CaptchaSample = collections.namedtuple('CaptchaSample', ['captcha', 'text'])
 class CaptchaGenerator(object):
     """
         Class that incapsulates captcha generation.
-        Constructor gets fonts directory as inputs.
     """
     def __init__(self, fonts_dir, alphabet, captcha_size,
                  width=160, height=60):
@@ -35,7 +33,7 @@ class CaptchaGenerator(object):
 
     def get_samples(self, count):
         """
-            Generates samples using fonts from constructor.
+            Generates batch of samples.
         """
         samples = []
         for i in xrange(count):
