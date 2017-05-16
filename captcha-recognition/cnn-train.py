@@ -2,7 +2,7 @@
 import os
 import argparse
 import time
-import numpy
+import numpy as np
 import string
 
 import captcha_input as cap_in
@@ -11,9 +11,9 @@ import cnn_model as model
 import tensorflow as tf
 from tensorflow.contrib import slim
 
-ALPHABET = list(string.ascii_lowercase + string.digits)
+ALPHABET = np.array(list(string.ascii_lowercase + string.digits))
 CAPTCHA_SIZE = 5
-SAMPLES_PER_EPOCH = 50000
+SAMPLES_PER_EPOCH = 5000
 
 
 def get_model_params(app_args):
@@ -45,7 +45,8 @@ def train(app_args):
     with tf.Graph().as_default() as graph:
         coordinator = tf.train.Coordinator()
         manager = cap_in.CaptchaGenerator(coordinator, app_args.fonts_dir,
-                                          ALPHABET, 5, app_args.batch_size)
+                                          ALPHABET, CAPTCHA_SIZE,
+                                          app_args.batch_size)
 
         # Build a Graph that computes the logits predictions
         model_params = get_model_params(app_args)
@@ -80,7 +81,9 @@ def train(app_args):
         # Define ops
         init_op = tf.global_variables_initializer()
         train_op = slim.learning.create_train_op(loss, opt)
-        # top_k_op = tf.nn.in_top_k(logits, labels, 1)
+        prediction = tf.argmax(logits, 2)
+        equal = tf.equal(tf.cast(prediction, tf.int32), labels)
+        accuracy = tf.reduce_mean(tf.cast(equal, tf.float32), name="accuracy")
 
         tf.summary.scalar("Learning_rate", lr)
         tf.summary.scalar("Loss", loss)
@@ -95,6 +98,7 @@ def train(app_args):
             threads = manager.start_threads(session)
 
             for step in xrange(1, app_args.max_steps + 1):
+                print step
                 if not (step % app_args.save_summary_steps == 0):
                     session.run(train_op)
                 else:
@@ -102,7 +106,7 @@ def train(app_args):
                         trace_level=tf.RunOptions.FULL_TRACE)
                     run_metadata = tf.RunMetadata()
                     _, loss_value, precission, summary = session.run(
-                        [train_op, loss, summary_op],
+                        [train_op, loss, accuracy, summary_op],
                         options=run_options,
                         run_metadata=run_metadata)
 
@@ -123,7 +127,7 @@ def train(app_args):
                         " Samples per sec = %d"
                         " Sec per batch = %f" %
                         (step, loss_value,
-                         (numpy.sum(precission) / float(app_args.batch_size)),
+                         (np.sum(precission) / float(app_args.batch_size)),
                          examples_per_sec, sec_per_batch))
 
                 if (step % app_args.save_checkpoint_steps == 0 or

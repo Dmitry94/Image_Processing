@@ -6,6 +6,7 @@ import os
 import random
 import collections
 import multiprocessing
+import cv2
 import threading
 import numpy as np
 import tensorflow as tf
@@ -56,11 +57,12 @@ class CaptchaGenerator(object):
             captcha_text = random.sample(self.alphabet, self.captcha_size)
             data = self.image_captcha_gen.generate_image(captcha_text)
             captcha = np.array(data)
+            captcha = cv2.resize(captcha, (self.width, self.height))
             label = self._get_label(captcha_text)
             labels.append(label)
             samples.append(captcha)
 
-        samples = np.zeros((128, 60, 160, 3))
+        samples = np.array(samples)
         labels = np.array(labels)
         samples = samples.astype(np.float32)
         samples = (samples - np.mean(samples, axis=(1, 2, 3),
@@ -76,6 +78,7 @@ class CaptchaGenerator(object):
             i = np.argwhere(self.alphabet == letter)
             label.append(i)
 
+        label = np.array(label).flatten()
         return label
 
     def size(self):
