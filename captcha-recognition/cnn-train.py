@@ -13,7 +13,6 @@ from tensorflow.contrib import slim
 
 ALPHABET = np.array(list(string.ascii_lowercase + string.digits))
 CAPTCHA_SIZE = 5
-SAMPLES_PER_EPOCH = 5000
 
 
 def get_model_params(app_args):
@@ -46,6 +45,7 @@ def train(app_args):
         coordinator = tf.train.Coordinator()
         manager = cap_in.CaptchaGenerator(coordinator, app_args.fonts_dir,
                                           ALPHABET, CAPTCHA_SIZE,
+                                          app_args.data_format,
                                           app_args.batch_size)
 
         # Build a Graph that computes the logits predictions
@@ -69,7 +69,7 @@ def train(app_args):
 
         # Set learning rate and optimizer
         global_step = tf.contrib.framework.get_or_create_global_step()
-        num_batches_per_epoch = (SAMPLES_PER_EPOCH / app_args.batch_size)
+        num_batches_per_epoch = (app_args.samples_count / app_args.batch_size)
         lr_decay_steps = app_args.num_epochs_lr_decay * num_batches_per_epoch
         lr = tf.train.exponential_decay(app_args.init_lr,
                                         global_step,
@@ -155,6 +155,14 @@ if __name__ == "__main__":
     parser.add_argument("--max-steps", type=int,
                         help="Number of batches to run",
                         default=100000)
+
+    parser.add_argument("--captcha-size", type=int,
+                        help="Number chars in captcha",
+                        default=5)
+
+    parser.add_argument("--samples-count", type=int,
+                        help="Count of samples per epoch",
+                        default=5000)
 
     parser.add_argument("--batch-size", type=int,
                         help="Number of images to process in a batch",

@@ -21,8 +21,8 @@ class CaptchaGenerator(object):
     """
         Class that incapsulates captcha generation.
     """
-    def __init__(self, coord, fonts_dir, alphabet, captcha_size, batch_size=128,
-                 width=160, height=60, queue_size=32):
+    def __init__(self, coord, fonts_dir, alphabet, captcha_size, data_format,
+                 batch_size=128, width=160, height=60, queue_size=32):
         fonts = []
         for file in os.listdir("fonts"):
             if file.endswith(".ttf"):
@@ -31,6 +31,7 @@ class CaptchaGenerator(object):
         self.width = width
         self.height = height
         self.batch_size = batch_size
+        self.data_format = data_format
         self.image_captcha_gen = ImageCaptcha(fonts=fonts,
                                               height=height, width=width)
         self.alphabet = alphabet
@@ -40,6 +41,8 @@ class CaptchaGenerator(object):
             tf.float32, [batch_size, height, width, 3])
         self.labels_pl = tf.placeholder(
             tf.int32, [batch_size, captcha_size])
+        if self.data_format == "NCHW":
+            self.images_pl = tf.transpose(self.images_pl, [0, 3, 1, 2])
         self.queue = tf.FIFOQueue(
             queue_size, [self.images_pl.dtype, self.labels_pl.dtype],
             [self.images_pl.get_shape(), self.labels_pl.get_shape()])
@@ -69,6 +72,8 @@ class CaptchaGenerator(object):
                    keepdims=True)) / 255.0
         labels = labels.astype(np.int32)
 
+        if self.data_format == "NCHW":
+            samples = np.transpose(samples, axes=[0, 3, 1, 2])
         return samples, labels
 
     def _get_label(self, captcha_text):
@@ -99,7 +104,7 @@ class CaptchaGenerator(object):
             except tf.errors.CancelledError:
                 return
 
-    def start_threads(self, session, n_threads=1):
+    def start_threads(self, session, n_threads=multiprocessing.cpu_count()):
         for _ in range(n_threads):
             thread = threading.Thread(target=self._thread_main, args=(session,))
             thread.daemon = True  # Thread will close when parent quits.
