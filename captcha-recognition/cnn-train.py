@@ -206,7 +206,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--fc-sizes", nargs="+", type=int,
                         help="List of sizes for each fc layer",
-                        default=[384, 192, CAPTCHA_SIZE * len(ALPHABET)])
+                        default=[1024, 512, CAPTCHA_SIZE * len(ALPHABET)])
 
     parser.add_argument("--drop-rates", nargs="+", type=int,
                         help="List of probs for each conv and fc layer",
