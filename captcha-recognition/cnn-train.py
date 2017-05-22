@@ -2,14 +2,15 @@
 import os
 import argparse
 import time
-import numpy as np
 import string
+import numpy as np
 
 import captcha_input as cap_in
 import cnn_model as model
 
 import tensorflow as tf
 from tensorflow.contrib import slim
+
 
 ALPHABET = np.array(list(string.ascii_lowercase + string.digits))
 CAPTCHA_SIZE = 5
@@ -43,10 +44,9 @@ def train(app_args):
 
     with tf.Graph().as_default() as graph:
         coordinator = tf.train.Coordinator()
-        manager = cap_in.CaptchaGenerator(coordinator, app_args.fonts_dir,
-                                          ALPHABET, CAPTCHA_SIZE,
-                                          app_args.data_format,
-                                          app_args.batch_size)
+        manager = cap_in.CaptchaDataManager(app_args.batch_size,
+                                            CAPTCHA_SIZE, app_args.hdf5_dir,
+                                            coordinator, app_args.data_format)
 
         # Build a Graph that computes the logits predictions
         model_params = get_model_params(app_args)
@@ -69,7 +69,7 @@ def train(app_args):
 
         # Set learning rate and optimizer
         global_step = tf.contrib.framework.get_or_create_global_step()
-        num_batches_per_epoch = (app_args.samples_count / app_args.batch_size)
+        num_batches_per_epoch = (manager.samples_count / app_args.batch_size)
         lr_decay_steps = app_args.num_epochs_lr_decay * num_batches_per_epoch
         lr = tf.train.exponential_decay(app_args.init_lr,
                                         global_step,
@@ -99,7 +99,7 @@ def train(app_args):
 
             for step in xrange(1, app_args.max_steps + 1):
                 print step
-                if not (step % app_args.save_summary_steps == 0):
+                if not (step % app_args.log_frequency == 0):
                     session.run(train_op)
                 else:
                     run_options = tf.RunOptions(
@@ -110,9 +110,10 @@ def train(app_args):
                         options=run_options,
                         run_metadata=run_metadata)
 
-                    summary_writer.add_run_metadata(run_metadata,
-                                                    "step%d" % step)
-                    summary_writer.add_summary(summary, step)
+                    if (step % app_args.save_summary_steps == 0):
+                        summary_writer.add_run_metadata(run_metadata,
+                                                        "step%d" % step)
+                        summary_writer.add_summary(summary, step)
 
                     current_time = time.time()
                     duration = current_time - start_time
@@ -144,9 +145,9 @@ def train(app_args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--fonts-dir",
-                        help="Path to the fonts directory",
-                        default="fonts")
+    parser.add_argument("--hdf5-dir",
+                        help="Path to the train directory",
+                        default="train_data")
 
     parser.add_argument("--log-dir",
                         help="Path to the directory, where log will write",
@@ -155,14 +156,6 @@ if __name__ == "__main__":
     parser.add_argument("--max-steps", type=int,
                         help="Number of batches to run",
                         default=100000)
-
-    parser.add_argument("--captcha-size", type=int,
-                        help="Number chars in captcha",
-                        default=5)
-
-    parser.add_argument("--samples-count", type=int,
-                        help="Count of samples per epoch",
-                        default=5000)
 
     parser.add_argument("--batch-size", type=int,
                         help="Number of images to process in a batch",
