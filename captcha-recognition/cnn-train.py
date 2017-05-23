@@ -70,8 +70,7 @@ def train(app_args):
         cross_entropy_per_number = tf.nn.softmax_cross_entropy_with_logits(
             logits=logits, labels=labels)
         cross_entropy = tf.reduce_mean(cross_entropy_per_number)
-        loss = tf.losses.sparse_softmax_cross_entropy(labels, logits)
-        loss = tf.losses.get_total_loss()
+        loss = tf.losses.get_total_loss() + cross_entropy
 
         # Set learning rate and optimizer
         global_step = tf.contrib.framework.get_or_create_global_step()

@@ -174,7 +174,8 @@ def cnn_model(images, model_params):
 
     with slim.arg_scope([slim.conv2d, slim.fully_connected],
                         activation_fn=tf.nn.relu,
-                        weights_initializer=slim.xavier_initializer()):
+                        weights_initializer=slim.xavier_initializer(),
+                        weights_regularizer=slim.l2_regularizer(0.005)):
         net = slim.stack(images, conv_pool_drop_2d, zip(
             filters_counts, conv_ksizes, conv_strides, pool_ksizes,
             pool_strides, drop_rates[0:conv_layers_count], data_formats),
