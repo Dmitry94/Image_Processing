@@ -9,6 +9,7 @@ from captcha.image import ImageCaptcha
 import random
 import string
 import argparse
+import captcha_model
 import os
 
 
@@ -33,7 +34,7 @@ def main():
     if not os.path.exists(path):
         os.makedirs(path)
     for i in range(int(args['number'])):
-        number_to_write = "".join([random.choice(string.digits) for _ in range(4)])
+        number_to_write = "".join([random.choice(string.digits) for _ in range(captcha_model.NUMBERS)])
         producer.write(number_to_write, os.path.join(path, str(i)+"_"+number_to_write+".png"))
 
 
