@@ -24,7 +24,7 @@ def read_and_decode(path):
 
 
 def decode_label(label):
-    one_hot_label = np.zeros([4, 10])
+    one_hot_label = np.zeros([captcha_model.NUMBERS, 10])
     index = [[0, 1, 2, 3], map(int, list(label))]
     one_hot_label[index] = 1.0
     return one_hot_label.astype(np.uint8)
