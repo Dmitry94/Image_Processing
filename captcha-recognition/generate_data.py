@@ -48,7 +48,7 @@ def main(app_args):
     for i in xrange(app_args.files_count):
         samples = []
         labels = []
-        for _ in xrange(app_args.file_size):
+        for k in xrange(app_args.file_size):
             captcha_text = random.sample(ALPHABET, app_args.captcha_size)
             data = image_captcha_gen.generate_image(captcha_text)
             captcha = np.array(data)
@@ -57,6 +57,8 @@ def main(app_args):
             label = _get_label(captcha_text)
             labels.append(label)
             samples.append(captcha)
+            if k % 1000 == 0:
+                print("Generated: %d" % k)
 
         samples = np.array(samples)
         labels = np.array(labels)
@@ -86,12 +88,12 @@ if __name__ == '__main__':
     parser.add_argument(
         "--files-count", type=int,
         help="Number of hdf5 files",
-        default=10)
+        default=1)
 
     parser.add_argument(
         "--file-size", type=float,
         help="Count of images in each file",
-        default=2500)
+        default=5000)
 
     parser.add_argument(
         "--captcha-size", type=float,

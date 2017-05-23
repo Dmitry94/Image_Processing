@@ -64,14 +64,16 @@ class CaptchaDataManager(object):
                 self.i = self.i + 1
             else:
                 self.i = 0
-                self.file_ind = (self.file_ind + 1) % len(self.filenames)
-                self.cur_hdf5.close()
-                self.cur_hdf5 = h5py.File(self.filenames[self.file_ind], "r")
-                self.images = self.cur_hdf5["data"]
-                self.labels = self.cur_hdf5["labels"]
-                self.samples_count = self.images.maxshape[0]
-                self.im_width = self.images.maxshape[2]
-                self.im_height = self.images.maxshape[1]
+                if len(self.filenames) > 1:
+                    self.file_ind = (self.file_ind + 1) % len(self.filenames)
+                    self.cur_hdf5.close()
+                    self.cur_hdf5 = h5py.File(self.filenames[self.file_ind],
+                                              "r")
+                    self.images = self.cur_hdf5["data"]
+                    self.labels = self.cur_hdf5["labels"]
+                    self.samples_count = self.images.maxshape[0]
+                    self.im_width = self.images.maxshape[2]
+                    self.im_height = self.images.maxshape[1]
 
             #
             #
