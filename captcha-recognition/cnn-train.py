@@ -74,12 +74,12 @@ def train(app_args):
         global_step = tf.contrib.framework.get_or_create_global_step()
         num_batches_per_epoch = (manager.samples_count / app_args.batch_size)
         lr_decay_steps = app_args.num_epochs_lr_decay * num_batches_per_epoch
-        lr = tf.train.exponential_decay(app_args.init_lr,
-                                        global_step,
-                                        lr_decay_steps,
-                                        app_args.lr_decay_factor,
-                                        staircase=True)
-        opt = tf.train.GradientDescentOptimizer(lr)
+        # lr = tf.train.exponential_decay(app_args.init_lr,
+        #                                 global_step,
+        #                                 lr_decay_steps,
+        #                                 app_args.lr_decay_factor,
+        #                                 staircase=True)
+        # opt = tf.train.GradientDescentOptimizer(lr)
         opt = tf.train.AdamOptimizer()
 
         # Define ops
@@ -89,7 +89,7 @@ def train(app_args):
         equal = tf.equal(tf.cast(prediction, tf.int32), labels)
         accuracy = tf.reduce_mean(tf.cast(equal, tf.float32), name="accuracy")
 
-        tf.summary.scalar("Learning_rate", lr)
+        # tf.summary.scalar("Learning_rate", lr)
         tf.summary.scalar("Loss", loss)
         summary_op = tf.summary.merge_all()
         summary_writer = tf.summary.FileWriter(app_args.log_dir, graph)
