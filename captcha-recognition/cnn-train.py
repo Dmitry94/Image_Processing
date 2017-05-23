@@ -119,10 +119,10 @@ def train(app_args):
                     duration = current_time - start_time
                     start_time = current_time
                     loss_value = session.run(loss)
-                    examples_per_sec = int(app_args.save_summary_steps *
+                    examples_per_sec = int(app_args.log_frequency *
                                            app_args.batch_size / duration)
                     sec_per_batch = float(duration /
-                                          app_args.save_summary_steps)
+                                          app_args.log_frequency)
                     print(
                         "Step = %d Loss = %f Precission = %f"
                         " Samples per sec = %d"
