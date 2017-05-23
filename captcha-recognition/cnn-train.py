@@ -68,6 +68,7 @@ def train(app_args):
         logits = tf.reshape(logits, (app_args.batch_size,
                                      CAPTCHA_SIZE, len(ALPHABET)))
         loss = tf.losses.sparse_softmax_cross_entropy(labels, logits)
+        tf.losses.get_total_loss()
 
         # Set learning rate and optimizer
         global_step = tf.contrib.framework.get_or_create_global_step()
