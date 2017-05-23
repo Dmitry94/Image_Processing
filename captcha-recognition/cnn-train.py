@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import os
 import argparse
@@ -98,8 +100,7 @@ def train(app_args):
             threads = manager.start_threads(session)
 
             for step in xrange(1, app_args.max_steps + 1):
-                print step
-                if not (step % app_args.log_frequency == 0):
+                if step % app_args.log_frequency != 0:
                     session.run(train_op)
                 else:
                     run_options = tf.RunOptions(

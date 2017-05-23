@@ -42,7 +42,7 @@ class CaptchaDataManager(object):
 
         # Init queue parameters
         self.images_pl = tf.placeholder(tf.float32, [
-            batch_size, self.im_width, self.im_height, 3])
+            batch_size, self.im_height, self.im_width, 3])
         self.labels_pl = tf.placeholder(tf.int32, [batch_size, captcha_size])
         if self.data_format == "NCHW":
             self.images_pl = tf.transpose(self.images_pl, [0, 3, 1, 2])
