@@ -57,8 +57,8 @@ def eval_once(app_args, saver):
         im_feed, l_feed = manager.next_batch()
 
         loss_val, predictions = sess.run(
-            [loss, equal], feed_dict={"images:0": im_feed,
-                                      "labels:0": l_feed})
+            [loss, equal], feed_dict={images: im_feed,
+                                      labels: l_feed})
         loss_mean += loss_val
         true_count += np.sum(predictions)
         step += 1
@@ -93,13 +93,9 @@ if __name__ == "__main__":
                         help="Path to the data directory",
                         default="test_data")
 
-    parser.add_argument("--samples-count", type=int,
-                        help="Number of images to process at all",
-                        default=10000)
-
     parser.add_argument("--batch-size", type=int,
                         help="Number of images to process in a batch",
-                        default=256)
+                        default=5)
 
     parser.add_argument("--log-dir",
                         help="Path to the directory, where log will write",
