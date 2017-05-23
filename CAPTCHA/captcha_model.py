@@ -14,7 +14,7 @@ WIDTH = 125
 HEIGHT = 65
 CHANNELS = 3
 CLASSES = 10
-NUMBERS = 4
+NUMBERS = 5
 
 
 def inference(inputs):
