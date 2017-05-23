@@ -188,11 +188,11 @@ if __name__ == "__main__":
 
     parser.add_argument("--filters-counts", nargs="+", type=int,
                         help="List of filter counts for each conv layer",
-                        default=[64, 64])
+                        default=[96, 64])
 
     parser.add_argument("--conv-ksizes", nargs="+", type=int,
                         help="List of kernel sizes for each conv layer",
-                        default=[5])
+                        default=[10, 5])
 
     parser.add_argument("--conv-strides", nargs="+", type=int,
                         help="List of strides for each conv layer",
@@ -208,7 +208,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--fc-sizes", nargs="+", type=int,
                         help="List of sizes for each fc layer",
-                        default=[1024, 512, CAPTCHA_SIZE * len(ALPHABET)])
+                        default=[2048, 2048, CAPTCHA_SIZE * len(ALPHABET)])
 
     parser.add_argument("--drop-rates", nargs="+", type=int,
                         help="List of probs for each conv and fc layer",
