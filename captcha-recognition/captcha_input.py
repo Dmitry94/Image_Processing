@@ -6,6 +6,7 @@ import os
 import h5py
 import multiprocessing
 import threading
+import generate_data
 import numpy as np
 import tensorflow as tf
 
@@ -43,7 +44,9 @@ class CaptchaDataManager(object):
         # Init queue parameters
         self.images_pl = tf.placeholder(tf.float32, [
             batch_size, self.im_height, self.im_width, 3])
-        self.labels_pl = tf.placeholder(tf.int32, [batch_size, captcha_size])
+        self.labels_pl = tf.placeholder(tf.int32,
+                                        [batch_size, captcha_size,
+                                         len(generate_data.ALPHABET)])
         if self.data_format == "NCHW":
             self.images_pl = tf.transpose(self.images_pl, [0, 3, 1, 2])
         self.queue = tf.FIFOQueue(queue_size,

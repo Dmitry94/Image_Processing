@@ -29,7 +29,10 @@ def _get_label(captcha_text):
         label.append(i)
 
     label = np.array(label).flatten()
-    return label
+    one_hot = np.zeros((CAPTCHA_SIZE, len(ALPHABET)))
+    index = [np.arange(0, CAPTCHA_SIZE), label]
+    one_hot[index] = 1
+    return one_hot.astype(np.uint8)
 
 
 def main(app_args):

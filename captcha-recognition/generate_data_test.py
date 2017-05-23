@@ -9,12 +9,11 @@ import argparse
 import h5py
 import os
 import random
-import string
 import cv2
 import numpy as np
+import generate_data
 
-
-ALPHABET = np.array(list(string.ascii_lowercase + string.digits))
+ALPHABET = generate_data.ALPHABET
 
 
 def show_data_in_the_path(path, images_count):
@@ -27,7 +26,8 @@ def show_data_in_the_path(path, images_count):
             cur_labels = cur_hdf5["labels"][0:images_count]
 
             cur_images = cur_images.astype(np.uint8)
-            cur_labels = cur_labels.astype(np.int32)
+            cur_labels = cur_labels.astype(np.int8)
+            cur_labels = np.argmax(cur_labels, 2)
 
             images.extend(cur_images)
             labels.extend(cur_labels)

@@ -57,7 +57,9 @@ def train(app_args):
         im_shape = images.get_shape().as_list()[1:4]
         images = tf.placeholder_with_default(images, ([None] + im_shape),
                                              name="images")
-        labels = tf.placeholder_with_default(labels, [None, CAPTCHA_SIZE],
+        labels = tf.placeholder_with_default(labels,
+                                             [None, CAPTCHA_SIZE,
+                                              len(ALPHABET)],
                                              name="labels")
         logits = model.cnn_model(images, model_params)
         logits = tf.reshape(logits, [app_args.batch_size,
@@ -67,8 +69,10 @@ def train(app_args):
         tf.add_to_collection("logits", logits)
 
         # Calculate loss.
-        loss = tf.losses.sparse_softmax_cross_entropy(labels, logits)
-        loss = tf.losses.get_total_loss()
+        cross_entropy_per_number = tf.nn.softmax_cross_entropy_with_logits(
+            logits=logits, labels=labels)
+        cross_entropy = tf.reduce_mean(cross_entropy_per_number)
+        loss = tf.losses.get_total_loss() + cross_entropy
 
         # Set learning rate and optimizer
         opt = tf.train.AdamOptimizer(app_args.init_lr)
@@ -76,7 +80,9 @@ def train(app_args):
         # Define ops
         train_op = slim.learning.create_train_op(loss, opt)
         prediction = tf.argmax(logits, 2)
-        equal = tf.equal(tf.cast(prediction, tf.int32), labels)
+        actual = tf.argmax(labels, 2)
+        equal = tf.equal(tf.cast(prediction, tf.int32),
+                         tf.cast(actual, tf.int32))
         accuracy = tf.reduce_mean(tf.cast(equal, tf.float32), name="accuracy")
         init_op = tf.initialize_all_variables()
 
@@ -161,7 +167,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--log-frequency", type=int,
                         help="How often to log results to the console",
-                        default=10)
+                        default=1)
 
     parser.add_argument("--save-checkpoint-steps", type=int,
                         help="How often to save checkpoint",
