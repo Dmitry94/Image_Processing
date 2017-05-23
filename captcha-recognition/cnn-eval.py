@@ -63,7 +63,7 @@ def eval_once(app_args, saver):
         true_count += np.sum(predictions)
         step += 1
 
-    precision = true_count / float(total_sample_count)
+    precision = true_count / (float(total_sample_count) * CAPTCHA_SIZE)
     print("%s: Precision = %f, Loss = %f" % (datetime.now(), precision,
                                              (loss_mean / step)))
 
