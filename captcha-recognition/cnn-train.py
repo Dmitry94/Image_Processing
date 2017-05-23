@@ -69,10 +69,8 @@ def train(app_args):
         tf.add_to_collection("logits", logits)
 
         # Calculate loss.
-        cross_entropy_per_number = tf.nn.softmax_cross_entropy_with_logits(
-            logits=logits, labels=labels)
-        cross_entropy = tf.reduce_mean(cross_entropy_per_number)
-        loss = tf.losses.get_total_loss() + cross_entropy
+        loss = tf.losses.softmax_cross_entropy(labels, logits)
+        loss = tf.losses.get_total_loss()
 
         # Set learning rate and optimizer
         opt = tf.train.AdamOptimizer(app_args.init_lr)
@@ -86,7 +84,6 @@ def train(app_args):
         accuracy = tf.reduce_mean(tf.cast(equal, tf.float32), name="accuracy")
         init_op = tf.initialize_all_variables()
 
-        # tf.summary.scalar("Learning_rate", lr)
         tf.summary.scalar("Loss", loss)
         summary_op = tf.summary.merge_all()
         summary_writer = tf.summary.FileWriter(app_args.log_dir, graph)
@@ -163,11 +160,11 @@ if __name__ == "__main__":
 
     parser.add_argument("--init-lr", type=float,
                         help="Start value for learning rate",
-                        default=1e-4)
+                        default=1e-3)
 
     parser.add_argument("--log-frequency", type=int,
                         help="How often to log results to the console",
-                        default=1)
+                        default=10)
 
     parser.add_argument("--save-checkpoint-steps", type=int,
                         help="How often to save checkpoint",
@@ -179,7 +176,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--filters-counts", nargs="+", type=int,
                         help="List of filter counts for each conv layer",
-                        default=[48, 64, 128])
+                        default=[32, 64, 128])
 
     parser.add_argument("--conv-ksizes", nargs="+", type=int,
                         help="List of kernel sizes for each conv layer",
@@ -199,7 +196,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--fc-sizes", nargs="+", type=int,
                         help="List of sizes for each fc layer",
-                        default=[2048, 2048, CAPTCHA_SIZE * len(ALPHABET)])
+                        default=[1024, 1024, CAPTCHA_SIZE * len(ALPHABET)])
 
     parser.add_argument("--drop-rates", nargs="+", type=int,
                         help="List of probs for each conv and fc layer",
