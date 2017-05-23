@@ -86,7 +86,9 @@ def train(app_args):
         train_op = slim.learning.create_train_op(loss, opt)
         prediction = tf.argmax(logits, 2)
         equal = tf.equal(tf.cast(prediction, tf.int32), labels)
-        accuracy = tf.reduce_mean(tf.cast(equal, tf.float32), name="accuracy")
+        equal = tf.reshape(equal, (app_args.batch_size, CAPTCHA_SIZE))
+        accuracy = tf.reduce_mean(tf.cast(equal, tf.float32), axis=1)
+        accuracy = tf.reduce_mean(accuracy, name="accuracy")
 
         tf.summary.scalar("Learning_rate", lr)
         tf.summary.scalar("Loss", loss)
