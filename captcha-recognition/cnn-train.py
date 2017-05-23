@@ -80,6 +80,7 @@ def train(app_args):
                                         app_args.lr_decay_factor,
                                         staircase=True)
         opt = tf.train.GradientDescentOptimizer(lr)
+        opt = tf.train.AdamOptimizer()
 
         # Define ops
         init_op = tf.global_variables_initializer()
