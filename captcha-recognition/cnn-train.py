@@ -81,7 +81,7 @@ def train(app_args):
         actual = tf.argmax(labels, 2)
         equal = tf.equal(tf.cast(prediction, tf.int32),
                          tf.cast(actual, tf.int32))
-        summ = tf.reduce_sum(equal, 1)
+        summ = tf.reduce_sum(tf.cast(equal, tf.int32), 1)
         summ = tf.divide(summ, app_args.batch_size)
         accuracy = tf.reduce_mean(tf.cast(equal, tf.float32), name="accuracy")
         init_op = tf.initialize_all_variables()
