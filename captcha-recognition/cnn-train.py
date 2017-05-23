@@ -81,6 +81,8 @@ def train(app_args):
         actual = tf.argmax(labels, 2)
         equal = tf.equal(tf.cast(prediction, tf.int32),
                          tf.cast(actual, tf.int32))
+        summ = tf.reduce_sum(equal, 1)
+        summ = tf.divide(summ, app_args.batch_size)
         accuracy = tf.reduce_mean(tf.cast(equal, tf.float32), name="accuracy")
         init_op = tf.initialize_all_variables()
 
@@ -103,7 +105,7 @@ def train(app_args):
                         trace_level=tf.RunOptions.FULL_TRACE)
                     run_metadata = tf.RunMetadata()
                     _, loss_value, precission, summary = session.run(
-                        [train_op, loss, accuracy, summary_op],
+                        [train_op, loss, summ, summary_op],
                         options=run_options,
                         run_metadata=run_metadata)
 
