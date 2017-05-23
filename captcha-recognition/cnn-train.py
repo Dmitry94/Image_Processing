@@ -15,6 +15,7 @@ from tensorflow.contrib import slim
 
 
 ALPHABET = np.array(list(string.ascii_lowercase + string.digits))
+ALPHABET = np.array(list(string.digits))
 CAPTCHA_SIZE = 5
 
 
@@ -71,15 +72,6 @@ def train(app_args):
         loss = tf.losses.get_total_loss()
 
         # Set learning rate and optimizer
-        global_step = tf.contrib.framework.get_or_create_global_step()
-        num_batches_per_epoch = (manager.samples_count / app_args.batch_size)
-        lr_decay_steps = app_args.num_epochs_lr_decay * num_batches_per_epoch
-        lr = tf.train.exponential_decay(app_args.init_lr,
-                                        global_step,
-                                        lr_decay_steps,
-                                        app_args.lr_decay_factor,
-                                        staircase=True)
-        # opt = tf.train.GradientDescentOptimizer(lr)
         opt = tf.train.AdamOptimizer()
 
         # Define ops
@@ -190,11 +182,11 @@ if __name__ == "__main__":
 
     parser.add_argument("--filters-counts", nargs="+", type=int,
                         help="List of filter counts for each conv layer",
-                        default=[96, 64])
+                        default=[48, 64, 128])
 
     parser.add_argument("--conv-ksizes", nargs="+", type=int,
                         help="List of kernel sizes for each conv layer",
-                        default=[10, 5])
+                        default=[5, 5, 5])
 
     parser.add_argument("--conv-strides", nargs="+", type=int,
                         help="List of strides for each conv layer",
@@ -202,7 +194,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--pool-ksizes", nargs="+", type=int,
                         help="List of kernel sizes for each pool layer",
-                        default=[3])
+                        default=[2])
 
     parser.add_argument("--pool-strides", nargs="+", type=int,
                         help="List of strides for each pool layer",

@@ -17,6 +17,7 @@ from captcha.image import ImageCaptcha
 
 
 ALPHABET = np.array(list(string.ascii_lowercase + string.digits))
+ALPHABET = np.array(list(string.digits))
 
 
 def _get_label(captcha_text):
