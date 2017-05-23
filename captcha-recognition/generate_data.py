@@ -91,12 +91,12 @@ if __name__ == '__main__':
         default=1)
 
     parser.add_argument(
-        "--file-size", type=float,
+        "--file-size", type=int,
         help="Count of images in each file",
         default=5000)
 
     parser.add_argument(
-        "--captcha-size", type=float,
+        "--captcha-size", type=int,
         help="Count of symbols in each captcha",
         default=5)
 
