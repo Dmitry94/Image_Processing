@@ -67,9 +67,9 @@ def train(app_args):
         tf.add_to_collection("logits", logits)
 
         # Calculate loss.
-        print logits.shape
+        prediction = tf.reduce_max(logits, 2)
         cross_entropy_per_number = tf.nn.softmax_cross_entropy_with_logits(
-            logits=logits, labels=labels)
+            logits=prediction, labels=labels)
         cross_entropy = tf.reduce_mean(cross_entropy_per_number)
         loss = tf.losses.get_total_loss() + cross_entropy
 
