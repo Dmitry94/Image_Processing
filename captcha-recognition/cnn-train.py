@@ -4,7 +4,7 @@
 import os
 import argparse
 import time
-import string
+import generate_data
 import numpy as np
 
 import captcha_input as cap_in
@@ -14,9 +14,8 @@ import tensorflow as tf
 from tensorflow.contrib import slim
 
 
-ALPHABET = np.array(list(string.ascii_lowercase + string.digits))
-ALPHABET = np.array(list(string.digits))
-CAPTCHA_SIZE = 5
+ALPHABET = generate_data.ALPHABET
+CAPTCHA_SIZE = generate_data.CAPTCHA_SIZE
 
 
 def get_model_params(app_args):
@@ -72,7 +71,7 @@ def train(app_args):
         loss = tf.losses.get_total_loss()
 
         # Set learning rate and optimizer
-        opt = tf.train.AdamOptimizer()
+        opt = tf.train.AdamOptimizer(app_args.init_lr)
 
         # Define ops
         train_op = slim.learning.create_train_op(loss, opt)
@@ -158,15 +157,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--init-lr", type=float,
                         help="Start value for learning rate",
-                        default=0.1)
-
-    parser.add_argument("--lr-decay-factor", type=float,
-                        help="Learning rate decay factor",
-                        default=0.1)
-
-    parser.add_argument("--num-epochs-lr-decay", type=int,
-                        help="How many epochs should processed to decay lr",
-                        default=350)
+                        default=1e-4)
 
     parser.add_argument("--log-frequency", type=int,
                         help="How often to log results to the console",
