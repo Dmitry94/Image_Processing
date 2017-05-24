@@ -62,13 +62,12 @@ def train(app_args):
                                               len(ALPHABET)],
                                              name="labels")
         logits = model.cnn_model(images, model_params)
-        logits = tf.reshape(logits, [app_args.batch_size,
-                                     CAPTCHA_SIZE, len(ALPHABET)])
         tf.add_to_collection('inputs', images)
         tf.add_to_collection('inputs', labels)
         tf.add_to_collection("logits", logits)
 
         # Calculate loss.
+        logits = tf.reshape(logits, tf.shape(labels))
         loss = tf.losses.softmax_cross_entropy(labels, logits)
         loss = tf.losses.get_total_loss()
 

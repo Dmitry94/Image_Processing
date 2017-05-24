@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--batch-size", type=int,
                         help="Number of images to process in a batch",
-                        default=5)
+                        default=256)
 
     parser.add_argument("--log-dir",
                         help="Path to the directory, where log will write",

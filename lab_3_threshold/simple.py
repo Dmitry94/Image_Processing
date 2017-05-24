@@ -9,7 +9,7 @@ def nothing(x):
     pass
 
 
-original_image = cv2.imread("images/2_28723.png", cv2.IMREAD_GRAYSCALE)
+original_image = cv2.imread("../content/Lenna.png", cv2.IMREAD_GRAYSCALE)
 original_image = cv2.resize(original_image, (800, 600))
 showing_image = original_image.copy()
 cv2.namedWindow(WINDOW_NAME)
