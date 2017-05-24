@@ -176,7 +176,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--filters-counts", nargs="+", type=int,
                         help="List of filter counts for each conv layer",
-                        default=[32, 64, 128])
+                        default=[64, 96, 384])
 
     parser.add_argument("--conv-ksizes", nargs="+", type=int,
                         help="List of kernel sizes for each conv layer",
