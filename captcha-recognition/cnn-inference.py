@@ -60,7 +60,6 @@ def eval_once(app_args, saver):
         im, l = next_im()
         img = Image.fromarray(im, 'RGB')
         img.show()
-        raw_input()
 
         im = (im - np.mean(im, axis=(0, 1, 2), keepdims=True)) / 255.0
         l = l.astype(np.int32)
@@ -71,6 +70,7 @@ def eval_once(app_args, saver):
             [loss, prediction], feed_dict={images: im, labels: l})
         inds = predictions.flatten()
         print(ALPHABET[inds])
+        raw_input()
 
     coord.request_stop()
 

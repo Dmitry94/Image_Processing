@@ -16,7 +16,7 @@ import numpy as np
 from captcha.image import ImageCaptcha
 
 
-ALPHABET = np.array(list(string.digits + "ABCDEFG"))
+ALPHABET = np.array(list("123498ABCHLZYTWJQ"))
 CAPTCHA_SIZE = 5
 
 
